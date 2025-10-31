@@ -1,5 +1,6 @@
 # flower_CC2340R5_RGE
 ![](/images/photo_2025-10-31_19-16-54.jpg)
+![](/images/2025-10-31_203427.png)
 ### Аппаратные средства
 1. Flower_CC2340R5_RGE
 2. LP-XDS110(ET)
@@ -9,4 +10,3 @@
 Проект [OSHWLab](https://oshwlab.com/koptserg/zigbee_cc2340_cr2032)
 
 ![](/images/2025-10-31_194809.png)
-![](/images/2025-10-31_203427.png)

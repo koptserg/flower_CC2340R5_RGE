@@ -9,3 +9,4 @@
 Проект [OSHWLab](https://oshwlab.com/koptserg/zigbee_cc2340_cr2032)
 
 ![](/images/2025-10-31_194809.png)
+![](/images/2025-10-31_203427.png)

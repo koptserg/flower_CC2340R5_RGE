@@ -1,0 +1,764 @@
+******************************************************************************
+            TI ARM Clang Linker PC v3.2.2                      
+******************************************************************************
+>> Linked Fri Oct 31 18:52:30 2025
+
+OUTPUT FILE NAME:   <mcuboot_flower_CC2340R5_RGE.out>
+ENTRY POINT SYMBOL: "resetISR"  address: 00002e6b
+
+
+MEMORY CONFIGURATION
+
+         name            origin    length      used     unused   attr    fill
+----------------------  --------  ---------  --------  --------  ----  --------
+  FLASH                 00000000   00004000  000033a8  00000c58  R  X
+  SRAM                  20000000   00009000  000049d8  00004628  RW X
+  CCFG                  4e020000   00000800  00000800  00000000  RW  
+  LOG_DATA              90000000   00040000  00000000  00040000  R   
+
+
+SEGMENT ALLOCATION MAP
+
+run origin  load origin   length   init length attrs members
+----------  ----------- ---------- ----------- ----- -------
+00000000    00000000    0000336c   0000336c    r-x
+  00000000    00000000    0000008c   0000008c    r-- .resetVecs
+  0000008c    0000008c    00002fa4   00002fa4    r-x .text
+  00003030    00003030    0000033c   0000033c    r-- .rodata
+0000336c    0000336c    00000008   00000008    rw-
+  0000336c    0000336c    00000008   00000008    rw- .args
+00003374    00003374    00000034   00000034    r--
+  00003374    00003374    00000034   00000034    r-- .cinit
+20000000    20000000    000045d8   00000000    rw-
+  20000000    20000000    00002568   00000000    rw- .bss
+  20002568    20002568    00002000   00000000    rw- .sysmem
+  20004568    20004568    00000070   00000000    rw- .data
+20008c00    20008c00    00000400   00000000    rw-
+  20008c00    20008c00    00000400   00000000    rw- .stack
+4e020000    4e020000    00000800   00000800    r--
+  4e020000    4e020000    00000800   00000800    r-- .ccfg
+
+
+SECTION ALLOCATION MAP
+
+ output                                  attributes/
+section   page    origin      length       input sections
+--------  ----  ----------  ----------   ----------------
+.resetVecs 
+*          0    00000000    0000008c     
+                  00000000    0000008c     nortos_cc23x0r5.a : startup_cc23x0r5_ticlang.c.obj (.resetVecs)
+
+.binit     0    00000000    00000000     
+
+.text      0    0000008c    00002fa4     
+                  0000008c    00000380     ecc.a : scalarMul.c.obj (.text.SCALARMUL_core)
+                  0000040c    00000330           : scalarMul.c.obj (.text.ATOMICPATTERN)
+                  0000073c    00000310           : lowlevelapi_m0_gnu.s.obj (.text)
+                  00000a4c    000002e0           : ECCSW.c.obj (.text.ECCSW_ECDSAVerify)
+                  00000d2c    0000020c     loader.o (.text.context_boot_go)
+                  00000f38    00000208     image_validate.o (.text.bootutil_img_validate)
+                  00001140    000001d8     ecc.a : scalarMul.c.obj (.text.INVERT)
+                  00001318    000001a8           : scalarMul.c.obj (.text.JACADD)
+                  000014c0    00000130           : ECCSW.c.obj (.text.ECCSW_validatePublicKeyWeierstrass)
+                  000015f0    00000120     image_ecdsa.o (.text.bootutil_verify_sig)
+                  00001710    00000118     loader.o (.text.boot_validate_slot)
+                  00001828    000000f2     ecc.a : scalarMul.c.obj (.text.SCALARMUL_init)
+                  0000191a    00000002     sl_crypto.o (.text.SlCrypto_ecdsa_p256_drop)
+                  0000191c    000000f0     ecdsa_lpf3.o (.text.ECDSA_verify)
+                  00001a0c    000000f0     ecc.a : scalarMul.c.obj (.text.SCALARMUL_final)
+                  00001afc    000000d4           : lowlevelapi.c.obj (.text.mSET)
+                  00001bd0    000000c8           : lowlevelapi.c.obj (.text.mINVK)
+                  00001c98    000000c4     tlv.o (.text.bootutil_tlv_iter_begin)
+                  00001d5c    000000b8     bootutil_public.o (.text.boot_read_swap_state)
+                  00001e14    000000ae     swap_scratch.o (.text.boot_slots_compatible)
+                  00001ec2    00000002     sl_crypto.o (.text.SlCrypto_ecdsa_p256_init)
+                  00001ec4    000000ac     tlv.o (.text.bootutil_tlv_iter_next)
+                  00001f70    000000ac     asn1parse.o (.text.mbedtls_asn1_get_len)
+                  0000201c    000000a8     bootutil_public.o (.text.boot_swap_type_multi)
+                  000020c4    000000a2     libclang_rt.builtins.a : udivmoddi4.S.obj (.text)
+                  00002166    00000094     ecc.a : scalarMul.c.obj (.text.SQUAREMULTIPLYWORD)
+                  000021fa    00000002     sl_crypto.o (.text.SlCrypto_sha256_drop)
+                  000021fc    00000090     ecc.a : lowlevelapi.c.obj (.text.zSUB)
+                  0000228c    0000008a           : lowlevelapi.c.obj (.text.zMACC32)
+                  00002316    00000088     asn1parse.o (.text.mbedtls_asn1_get_alg)
+                  0000239e    00000002     libclang_rt.builtins.a : aeabi_div0.c.obj (.text.__aeabi_ldiv0)
+                  000023a0    00000078     mcuboot_app.o (.text.main)
+                  00002418    00000078     libc.a : copy_decompress_lzss.c.obj (.text:decompress:lzss)
+                  00002490    00000066     ecc.a : scalarMul.c.obj (.text.GETDIGITL2R)
+                  000024f6    00000002     nortos_cc23x0r5.a : startup_cc23x0r5_ticlang.c.obj (.text.faultISR)
+                  000024f8    00000064     loader.o (.text.boot_copy_region)
+                  0000255c    00000064     flash_map_backend.o (.text.flash_area_erase)
+                  000025c0    00000054     sl_crypto.o (.text.SlCrypto_ecdsa_p256_verify)
+                  00002614    00000054     flash_map_backend.o (.text.flash_area_get_sectors)
+                  00002668    00000050     image_ecdsa.o (.text.bootutil_read_bigint)
+                  000026b8    0000004a     loader.o (.text.boot_check_header_erased)
+                  00002702    0000004a     ecc.a : lowlevelapi.c.obj (.text.zADD32)
+                  0000274c    00000044     flash_map_backend.o (.text.flash_area_write)
+                  00002790    00000044     ecc.a : lowlevelapi.c.obj (.text.zADD)
+                  000027d4    0000003e     loader.o (.text.boot_read_image_headers)
+                  00002812    0000003c     ecc.a : scalarMul.c.obj (.text.GETDIGIT)
+                  0000284e    00000002     flash_map_backend.o (.text.flash_area_close)
+                  00002850    0000003c     libc.a : autoinit.c.obj (.text:__TI_auto_init_nobinit_nopinit)
+                  0000288c    0000003a     libclang_rt.builtins.a : muldsi3.S.obj (.text.__muldsi3)
+                  000028c6    00000038     ecc.a : lowlevelapi.c.obj (.text.IMPORTOPERAND)
+                  000028fe    00000038     bootutil_public.o (.text.boot_read_flag)
+                  00002936    00000038     ecc.a : lowlevelapi.c.obj (.text.zSUB32)
+                  0000296e    00000036     loader.o (.text.boot_initialize_area)
+                  000029a4    00000034     ecc.a : scalarMul.c.obj (.text.SAVEPOINT)
+                  000029d8    00000034     swap_scratch.o (.text.boot_read_image_header)
+                  00002a0c    00000030     led_debug.o (.text.blinkLed)
+                  00002a3c    00000030     asn1parse.o (.text.mbedtls_asn1_get_bitstring_null)
+                  00002a6c    0000002e     ecdsa_lpf3.o (.text.CryptoUtils_reverseCopyPad)
+                  00002a9a    0000002e     bootutil_public.o (.text.bootutil_buffer_is_erased)
+                  00002ac8    0000002c     driverlib.a : setup.c.obj (.text.SetupTrimDevice)
+                  00002af4    0000002a     loader.o (.text.boot_read_sectors)
+                  00002b1e    0000002a     flash_map_backend.o (.text.flash_area_read)
+                  00002b48    00000028     bootutil_public.o (.text.boot_read_swap_state_by_id)
+                  00002b70    00000028     flash_map_backend.o (.text.flash_area_open)
+                  00002b98    00000026     asn1parse.o (.text.mbedtls_asn1_get_tag)
+                  00002bbe    00000002     nortos_cc23x0r5.a : startup_cc23x0r5_ticlang.c.obj (.text.intDefaultHandler)
+                  00002bc0    00000024     libclang_rt.builtins.a : muldi3.S.obj (.text.__muldi3)
+                  00002be4    00000024     libc.a : boot_cortex_m.c.obj (.text:_c_int00)
+                  00002c08    00000020     ecc.a : lowlevelapi.c.obj (.text.IMPORTMODULUS)
+                  00002c28    00000020     loader.o (.text.boot_go)
+                  00002c48    00000020     bootutil_misc.o (.text.memcmp)
+                  00002c68    0000001e     ecc.a : ECCSW.c.obj (.text.OUTLINED_FUNCTION_0)
+                  00002c86    00000002     nortos_cc23x0r5.a : startup_cc23x0r5_ticlang.c.obj (.text.nmiISR)
+                  00002c88    0000001e     libclang_rt.builtins.a : ashldi3.S.obj (.text.__ashldi3)
+                  00002ca6    00000002     --HOLE-- [fill = 0]
+                  00002ca8    0000001c     libc.a : args_main.c.obj (.text._args_main)
+                  00002cc4    0000001a     ecc.a : lowlevelapi.c.obj (.text.BUFFERSEQUAL)
+                  00002cde    0000001a           : lowlevelapi.c.obj (.text.EXPORTOPERAND)
+                  00002cf8    00000018     sl_crypto.o (.text.SlCrypto_sha256_final)
+                  00002d10    00000018     sl_crypto.o (.text.SlCrypto_sha256_init)
+                  00002d28    00000018     sl_crypto.o (.text.SlCrypto_sha256_update)
+                  00002d40    00000018     platform_util.o (.text.mbedtls_platform_zeroize)
+                  00002d58    00000018     image_ecdsa.o (.text.memcmp)
+                  00002d70    00000018     led_debug.o (.text.powerUpGpio)
+                  00002d88    00000016     ecc.a : lowlevelapi.c.obj (.text.IMPORTDATA)
+                  00002d9e    00000016           : lowlevelapi.c.obj (.text.SETOPERAND)
+                  00002db4    00000014           : lowlevelapi.c.obj (.text.ISALLZEROS)
+                  00002dc8    00000014     libclang_rt.builtins.a : aeabi_uldivmod.S.obj (.text.__aeabi_uldivmod)
+                  00002ddc    00000014     led_debug.o (.text.delay)
+                  00002df0    00000012     ecc.a : ECCSW.c.obj (.text.OUTLINED_FUNCTION_1)
+                  00002e02    00000012           : lowlevelapi.c.obj (.text.OUTLINED_FUNCTION_1)
+                  00002e14    00000012     flash_map_backend.o (.text.flash_area_align)
+                  00002e26    00000012     libc.a : memcpy16.S.obj (.text:TI_memcpy_small)
+                  00002e38    00000012            : copy_decompress_none.c.obj (.text:decompress:none)
+                  00002e4a    00000010     ecc.a : lowlevelapi.c.obj (.text.OUTLINED_FUNCTION_5)
+                  00002e5a    00000010     bootutil_public.o (.text.boot_read_image_ok)
+                  00002e6a    00000010     nortos_cc23x0r5.a : startup_cc23x0r5_ticlang.c.obj (.text.resetISR)
+                  00002e7a    00000010     libc.a : copy_zero_init.c.obj (.text:decompress:ZI)
+                  00002e8a    0000000e     ecc.a : lowlevelapi.c.obj (.text.COPY)
+                  00002e98    0000000e           : scalarMul.c.obj (.text.OUTLINED_FUNCTION_4)
+                  00002ea6    0000000e           : scalarMul.c.obj (.text.OUTLINED_FUNCTION_6)
+                  00002eb4    0000000e           : lowlevelapi.c.obj (.text.ZERO)
+                  00002ec2    0000000e     flash_map_backend.o (.text.flash_area_erased_val)
+                  00002ed0    0000000e     flash_map_backend.o (.text.flash_area_id_from_multi_image_slot)
+                  00002ede    0000000e     libc.a : memset16.S.obj (.text:TI_memset_small)
+                  00002eec    0000000c     ecc.a : lowlevelapi.c.obj (.text.OUTLINED_FUNCTION_2)
+                  00002ef8    0000000c           : lowlevelapi.c.obj (.text.OUTLINED_FUNCTION_3)
+                  00002f04    00000010           : lowlevelapi.c.obj (.tramp.zMACC32.1)
+                  00002f14    0000000c           : ECCSW.c.obj (.text.OUTLINED_FUNCTION_4)
+                  00002f20    0000000c     libclang_rt.builtins.a : aeabi_memset.S.obj (.text.__aeabi_memclr)
+                  00002f2c    0000000c     led_debug.o (.text.lightRedLed)
+                  00002f38    0000000a     ecc.a : lowlevelapi.c.obj (.text.OUTLINED_FUNCTION_0)
+                  00002f42    0000000a           : scalarMul.c.obj (.text.OUTLINED_FUNCTION_10)
+                  00002f4c    0000000a           : scalarMul.c.obj (.text.OUTLINED_FUNCTION_1)
+                  00002f56    0000000a           : scalarMul.c.obj (.text.OUTLINED_FUNCTION_2)
+                  00002f60    0000000a           : lowlevelapi.c.obj (.text.OUTLINED_FUNCTION_4)
+                  00002f6a    0000000a           : scalarMul.c.obj (.text.OUTLINED_FUNCTION_5)
+                  00002f74    0000000a           : scalarMul.c.obj (.text.OUTLINED_FUNCTION_7)
+                  00002f7e    0000000a           : scalarMul.c.obj (.text.OUTLINED_FUNCTION_8)
+                  00002f88    0000000a           : scalarMul.c.obj (.text.OUTLINED_FUNCTION_9)
+                  00002f92    0000000a     bootutil_public.o (.text.boot_swap_info_off)
+                  00002f9c    0000000a     mcuboot_app.o (.text.start_app)
+                  00002fa6    00000008     ecc.a : scalarMul.c.obj (.text.OUTLINED_FUNCTION_0)
+                  00002fae    00000008           : ECCSW.c.obj (.text.OUTLINED_FUNCTION_5)
+                  00002fb6    00000008           : ECCSW.c.obj (.text.OUTLINED_FUNCTION_6)
+                  00002fbe    00000002     --HOLE-- [fill = 0]
+                  00002fc0    00000010           : lowlevelapi_m0_gnu.s.obj (.tramp.mADD.1)
+                  00002fd0    00000008           : lowlevelapi.c.obj (.text.OUTLINED_FUNCTION_6)
+                  00002fd8    00000010           : lowlevelapi.c.obj (.tramp.zADD32.1)
+                  00002fe8    00000008           : lowlevelapi.c.obj (.text.SETWORD)
+                  00002ff0    00000008     libclang_rt.builtins.a : aeabi_memcpy.S.obj (.text.__aeabi_memcpy)
+                  00002ff8    00000008     bootutil_misc.o (.text.boot_fih_memequal)
+                  00003000    00000008     bootutil_misc.o (.text.bootutil_max_image_size)
+                  00003008    00000006     ecc.a : scalarMul.c.obj (.text.OUTLINED_FUNCTION_3)
+                  0000300e    00000002     --HOLE-- [fill = 0]
+                  00003010    00000010           : lowlevelapi_m0_gnu.s.obj (.tramp.mMULT.1)
+                  00003020    00000004     ecdsa_lpf3.o (.text.CryptoKeyPlaintext_initKey)
+                  00003024    00000004     ecc.a : lowlevelapi.c.obj (.text.IMPORTLENGTH)
+                  00003028    00000004     libc.a : pre_init.c.obj (.text._system_pre_init)
+                  0000302c    00000004            : exit.c.obj (.text:abort)
+
+.rodata    0    00003030    0000033c     
+                  00003030    00000078     ecc.a : scalarMul.c.obj (.rodata.LUTJ)
+                  000030a8    0000005b     keys.o (.rodata.root_pub_der)
+                  00003103    0000003c     ecc.a : scalarMul.c.obj (.rodata.LUTSTATE)
+                  0000313f    00000001     --HOLE-- [fill = 0]
+                  00003140    00000024     ecdsa_lpf3.o (.rodata.ECC_NISTP256_a)
+                  00003164    00000024     ecdsa_lpf3.o (.rodata.ECC_NISTP256_a_mont)
+                  00003188    00000024     ecdsa_lpf3.o (.rodata.ECC_NISTP256_b)
+                  000031ac    00000024     ecdsa_lpf3.o (.rodata.ECC_NISTP256_b_mont)
+                  000031d0    00000024     ecdsa_lpf3.o (.rodata.ECC_NISTP256_generatorX)
+                  000031f4    00000024     ecdsa_lpf3.o (.rodata.ECC_NISTP256_generatorY)
+                  00003218    00000024     ecdsa_lpf3.o (.rodata.ECC_NISTP256_k_mont)
+                  0000323c    00000024     ecdsa_lpf3.o (.rodata.ECC_NISTP256_order)
+                  00003260    00000024     ecdsa_lpf3.o (.rodata.ECC_NISTP256_prime)
+                  00003284    00000018     ecc.a : scalarMul.c.obj (.rodata.LUTC)
+                  0000329c    00000018           : scalarMul.c.obj (.rodata.LUTINCI)
+                  000032b4    00000018           : scalarMul.c.obj (.rodata.LUTOPSIGN)
+                  000032cc    00000018           : scalarMul.c.obj (.rodata.LUTSE)
+                  000032e4    00000012     bootutil_public.o (.rodata.boot_swap_tables)
+                  000032f6    00000002     --HOLE-- [fill = 0]
+                  000032f8    00000010     flash_map_backend.o (.rodata.boot_area_descs)
+                  00003308    00000010     bootutil_public.o (.rodata.boot_img_magic)
+                  00003318    0000000c     flash_map_backend.o (.rodata.bootloader)
+                  00003324    0000000c     flash_map_backend.o (.rodata.primary_1)
+                  00003330    0000000c     flash_map_backend.o (.rodata.secondary_1)
+                  0000333c    00000009     image_ecdsa.o (.rodata.ec_secp256r1_oid)
+                  00003345    00000003     --HOLE-- [fill = 0]
+                  00003348    00000008     keys.o (.rodata.bootutil_keys)
+                  00003350    00000008     image_ecdsa.o (.rodata.ec_pubkey_oid)
+                  00003358    00000006     ecc.a : scalarMul.c.obj (.rodata.LUTOPCODE)
+                  0000335e    00000002     --HOLE-- [fill = 0]
+                  00003360    00000004     keys.o (.rodata.bootutil_key_cnt)
+                  00003364    00000004     platform_util.o (.rodata.memset_func)
+                  00003368    00000004     keys.o (.rodata.root_pub_der_len)
+
+.cinit     0    00003374    00000034     
+                  00003374    0000000e     (.cinit..data.load) [load image, compression = lzss]
+                  00003382    00000002     --HOLE-- [fill = 0]
+                  00003384    0000000c     (__TI_handler_table)
+                  00003390    00000008     (.cinit..bss.load) [load image, compression = zero_init]
+                  00003398    00000010     (__TI_cinit_table)
+
+.init_array 
+*          0    00000000    00000000     UNINITIALIZED
+
+.ccfg      0    4e020000    00000800     
+                  4e020000    00000800     ti_devices_config.o (.ccfg)
+
+.bss       0    20000000    00002568     UNINITIALIZED
+                  20000000    00001000     loader.o (.bss.context_boot_go.primary_slot_sectors)
+                  20001000    00001000     loader.o (.bss.context_boot_go.secondary_slot_sectors)
+                  20002000    00000400     loader.o (.bss.boot_copy_region.buf)
+                  20002400    00000100     loader.o (.bss.boot_image_check.tmpbuf)
+                  20002500    00000068     sl_crypto.o (.bss.sha256SWObject)
+
+.sysmem    0    20002568    00002000     UNINITIALIZED
+                  20002568    00000010     libc.a : memory.c.obj (.sysmem)
+                  20002578    00001ff0     --HOLE--
+
+.data      0    20004568    00000070     UNINITIALIZED
+                  20004568    00000064     loader.o (.data..L_MergedGlobals)
+                  200045cc    00000004     fault_injection_hardening.o (.data.FIH_FAILURE)
+                  200045d0    00000004     fault_injection_hardening.o (.data.FIH_NO_BOOTABLE_IMAGE)
+                  200045d4    00000004     fault_injection_hardening.o (.data.FIH_SUCCESS)
+
+.stack     0    20008c00    00000400     UNINITIALIZED
+                  20008c00    00000004     libc.a : boot_cortex_m.c.obj (.stack)
+                  20008c04    000003fc     --HOLE--
+
+.log_data 
+*          0    90000000    00000000     COPY SECTION
+
+__llvm_prf_cnts 
+*          0    20000000    00000000     UNINITIALIZED
+
+__llvm_prf_bits 
+*          0    20000000    00000000     UNINITIALIZED
+
+.args      0    0000336c    00000008     
+                  0000336c    00000008     --HOLE-- [fill = 0]
+
+MODULE SUMMARY
+
+       Module                           code    ro data   rw data
+       ------                           ----    -------   -------
+    .\
+       ecdsa_lpf3.o                     290     324       0      
+       mcuboot_app.o                    130     0         0      
+       keys.o                           0       107       0      
+    +--+--------------------------------+-------+---------+---------+
+       Total:                           420     431       0      
+                                                                 
+    .\bootutil\src\
+       loader.o                         1168    0         9572   
+       bootutil_public.o                520     34        0      
+       image_validate.o                 520     0         0      
+       image_ecdsa.o                    392     17        0      
+       tlv.o                            368     0         0      
+       swap_scratch.o                   226     0         0      
+       bootutil_misc.o                  48      0         0      
+       fault_injection_hardening.o      0       0         12     
+    +--+--------------------------------+-------+---------+---------+
+       Total:                           3242    51        9584   
+                                                                 
+    .\flash_map_backend\
+       flash_map_backend.o              382     52        0      
+    +--+--------------------------------+-------+---------+---------+
+       Total:                           382     52        0      
+                                                                 
+    .\mbedtls-asn1\
+       asn1parse.o                      394     0         0      
+       platform_util.o                  24      4         0      
+    +--+--------------------------------+-------+---------+---------+
+       Total:                           418     4         0      
+                                                                 
+    .\mcuboot_config\
+       led_debug.o                      104     0         0      
+    +--+--------------------------------+-------+---------+---------+
+       Total:                           104     0         0      
+                                                                 
+    .\syscfg\
+       ti_devices_config.o              0       2048      0      
+    +--+--------------------------------+-------+---------+---------+
+       Total:                           0       2048      0      
+                                                                 
+    .\ti-crypto\
+       sl_crypto.o                      162     0         104    
+    +--+--------------------------------+-------+---------+---------+
+       Total:                           162     0         104    
+                                                                 
+    C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/kernel/nortos/lib/ticlang/m0p/nortos_cc23x0r5.a
+       startup_cc23x0r5_ticlang.c.obj   22      140       0      
+    +--+--------------------------------+-------+---------+---------+
+       Total:                           22      140       0      
+                                                                 
+    C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/third_party/ecc/lib/ticlang/m0p/ecc.a
+       scalarMul.c.obj                  3564    282       0      
+       lowlevelapi.c.obj                1254    0         0      
+       ECCSW.c.obj                      1116    0         0      
+       lowlevelapi_m0_gnu.s.obj         816     0         0      
+    +--+--------------------------------+-------+---------+---------+
+       Total:                           6750    282       0      
+                                                                 
+    C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/devices/cc23x0r5/driverlib/lib/ticlang/driverlib.a
+       setup.c.obj                      44      0         0      
+    +--+--------------------------------+-------+---------+---------+
+       Total:                           44      0         0      
+                                                                 
+    C:\ti\ccs1281\ccs\tools\compiler\ti-cgt-armllvm_3.2.2.LTS\lib\armv6m-ti-none-eabi/c/libc.a
+       copy_decompress_lzss.c.obj       120     0         0      
+       autoinit.c.obj                   60      0         0      
+       boot_cortex_m.c.obj              36      0         0      
+       args_main.c.obj                  28      0         0      
+       copy_decompress_none.c.obj       18      0         0      
+       memcpy16.S.obj                   18      0         0      
+       copy_zero_init.c.obj             16      0         0      
+       memset16.S.obj                   14      0         0      
+       exit.c.obj                       4       0         0      
+       pre_init.c.obj                   4       0         0      
+    +--+--------------------------------+-------+---------+---------+
+       Total:                           318     0         0      
+                                                                 
+    C:\ti\ccs1281\ccs\tools\compiler\ti-cgt-armllvm_3.2.2.LTS\lib\clang/15.0.7/lib/armv6m-ti-none-eabi/libclang_rt.builtins.a
+       udivmoddi4.S.obj                 162     0         0      
+       muldsi3.S.obj                    58      0         0      
+       muldi3.S.obj                     36      0         0      
+       ashldi3.S.obj                    30      0         0      
+       aeabi_uldivmod.S.obj             20      0         0      
+       aeabi_memset.S.obj               12      0         0      
+       aeabi_memcpy.S.obj               8       0         0      
+       aeabi_div0.c.obj                 2       0         0      
+    +--+--------------------------------+-------+---------+---------+
+       Total:                           328     0         0      
+                                                                 
+       Heap:                            0       0         8192   
+       Stack:                           0       0         1024   
+       Linker Generated:                0       50        0      
+    +--+--------------------------------+-------+---------+---------+
+       Grand Total:                     12190   3058      18904  
+
+
+LINKER GENERATED COPY TABLES
+
+__TI_cinit_table @ 00003398 records: 2, size/record: 8, table size: 16
+	.data: load addr=00003374, load size=0000000e bytes, run addr=20004568, run size=00000070 bytes, compression=lzss
+	.bss: load addr=00003390, load size=00000008 bytes, run addr=20000000, run size=00002568 bytes, compression=zero_init
+
+
+LINKER GENERATED HANDLER TABLE
+
+__TI_handler_table @ 00003384 records: 3, size/record: 4, table size: 12
+	index: 0, handler: __TI_decompress_lzss
+	index: 1, handler: __TI_decompress_none
+	index: 2, handler: __TI_zero_init
+
+
+FAR CALL TRAMPOLINES
+
+callee name               trampoline name
+   callee addr  tramp addr   call addr  call info
+--------------  -----------  ---------  ----------------
+zMACC32                   $Tramp$TT$L$PI$$zMACC32
+   0000228d     00002f04     00002f02   ecc.a : lowlevelapi.c.obj (.text.OUTLINED_FUNCTION_3)
+mADD                      $Tramp$TT$L$PI$$mADD
+   000008e1     00002fc0     00002fbc   ecc.a : ECCSW.c.obj (.text.OUTLINED_FUNCTION_6)
+zADD32                    $Tramp$TT$L$PI$$zADD32
+   00002703     00002fd8     00002fd6   ecc.a : lowlevelapi.c.obj (.text.OUTLINED_FUNCTION_6)
+mMULT                     $Tramp$TT$L$PI$$mMULT
+   0000073d     00003010     0000300c   ecc.a : scalarMul.c.obj (.text.OUTLINED_FUNCTION_3)
+
+[4 trampolines]
+[4 trampoline calls]
+
+
+GLOBAL SYMBOLS: SORTED ALPHABETICALLY BY Name 
+
+address   name                                                
+-------   ----                                                
+0000040d  ATOMICPATTERN                                       
+00002cc5  BUFFERSEQUAL                                        
+0000302c  C$$EXIT                                             
+00002e8b  COPY                                                
+00003021  CryptoKeyPlaintext_initKey                          
+00000a4d  ECCSW_ECDSAVerify                                   
+000014c1  ECCSW_validatePublicKeyWeierstrass                  
+00003140  ECC_NISTP256_a                                      
+00003164  ECC_NISTP256_a_mont                                 
+00003188  ECC_NISTP256_b                                      
+000031ac  ECC_NISTP256_b_mont                                 
+000031d0  ECC_NISTP256_generatorX                             
+000031f4  ECC_NISTP256_generatorY                             
+00003218  ECC_NISTP256_k_mont                                 
+0000323c  ECC_NISTP256_order                                  
+00003260  ECC_NISTP256_prime                                  
+0000191d  ECDSA_verify                                        
+00002cdf  EXPORTOPERAND                                       
+200045cc  FIH_FAILURE                                         
+200045d0  FIH_NO_BOOTABLE_IMAGE                               
+200045d4  FIH_SUCCESS                                         
+00002813  GETDIGIT                                            
+00002491  GETDIGITL2R                                         
+00002d89  IMPORTDATA                                          
+00003025  IMPORTLENGTH                                        
+00002c09  IMPORTMODULUS                                       
+000028c7  IMPORTOPERAND                                       
+00001141  INVERT                                              
+00002db5  ISALLZEROS                                          
+00001319  JACADD                                              
+00003284  LUTC                                                
+0000329c  LUTINCI                                             
+00003030  LUTJ                                                
+00003358  LUTOPCODE                                           
+000032b4  LUTOPSIGN                                           
+000032cc  LUTSE                                               
+00003103  LUTSTATE                                            
+000029a5  SAVEPOINT                                           
+0000008d  SCALARMUL_core                                      
+00001a0d  SCALARMUL_final                                     
+00001829  SCALARMUL_init                                      
+00002d9f  SETOPERAND                                          
+00002fe9  SETWORD                                             
+00002167  SQUAREMULTIPLYWORD                                  
+00002ac9  SetupTrimDevice                                     
+0000191b  SlCrypto_ecdsa_p256_drop                            
+00001ec3  SlCrypto_ecdsa_p256_init                            
+000025c1  SlCrypto_ecdsa_p256_verify                          
+000021fb  SlCrypto_sha256_drop                                
+00002cf9  SlCrypto_sha256_final                               
+00002d11  SlCrypto_sha256_init                                
+00002d29  SlCrypto_sha256_update                              
+00002e27  TI_memcpy_small                                     
+00002edf  TI_memset_small                                     
+00002eb5  ZERO                                                
+20009000  __STACK_END                                         
+00000400  __STACK_SIZE                                        
+00002000  __SYSMEM_SIZE                                       
+00000000  __TI_ATRegion0_region_sz                            
+00000000  __TI_ATRegion0_src_addr                             
+00000000  __TI_ATRegion0_trg_addr                             
+00000000  __TI_ATRegion1_region_sz                            
+00000000  __TI_ATRegion1_src_addr                             
+00000000  __TI_ATRegion1_trg_addr                             
+00000000  __TI_ATRegion2_region_sz                            
+00000000  __TI_ATRegion2_src_addr                             
+00000000  __TI_ATRegion2_trg_addr                             
+00003398  __TI_CINIT_Base                                     
+000033a8  __TI_CINIT_Limit                                    
+000033a8  __TI_CINIT_Warm                                     
+00003384  __TI_Handler_Table_Base                             
+00003390  __TI_Handler_Table_Limit                            
+00002851  __TI_auto_init_nobinit_nopinit                      
+00002419  __TI_decompress_lzss                                
+00002e39  __TI_decompress_none                                
+ffffffff  __TI_pprof_out_hndl                                 
+ffffffff  __TI_prof_data_size                                 
+ffffffff  __TI_prof_data_start                                
+00000000  __TI_static_base__                                  
+00002e7b  __TI_zero_init                                      
+0000239f  __aeabi_ldiv0                                       
+00002c89  __aeabi_llsl                                        
+00002bc1  __aeabi_lmul                                        
+00002f21  __aeabi_memclr                                      
+00002f21  __aeabi_memclr4                                     
+00002f21  __aeabi_memclr8                                     
+00002ff1  __aeabi_memcpy                                      
+00002ff1  __aeabi_memcpy4                                     
+00002ff1  __aeabi_memcpy8                                     
+00002dc9  __aeabi_uldivmod                                    
+00002c89  __ashldi3                                           
+ffffffff  __binit__                                           
+0000336c  __c_args__                                          
+UNDEFED   __mpu_init                                          
+00002bc1  __muldi3                                            
+0000288d  __muldsi3                                           
+20008c00  __stack                                             
+20000000  __start___llvm_prf_bits                             
+20000000  __start___llvm_prf_cnts                             
+20000000  __stop___llvm_prf_bits                              
+20000000  __stop___llvm_prf_cnts                              
+000020c5  __udivmoddi4                                        
+00002ca9  _args_main                                          
+00002be5  _c_int00                                            
+20002568  _sys_memory                                         
+UNDEFED   _system_post_cinit                                  
+00003029  _system_pre_init                                    
+0000302d  abort                                               
+ffffffff  binit                                               
+00002a0d  blinkLed                                            
+000024f9  boot_copy_region                                    
+00002ff9  boot_fih_memequal                                   
+00002c29  boot_go                                             
+00003308  boot_img_magic                                      
+000029d9  boot_read_image_header                              
+00002e5b  boot_read_image_ok                                  
+00001d5d  boot_read_swap_state                                
+00002b49  boot_read_swap_state_by_id                          
+00001e15  boot_slots_compatible                               
+00002f93  boot_swap_info_off                                  
+0000201d  boot_swap_type_multi                                
+00002a9b  bootutil_buffer_is_erased                           
+00000f39  bootutil_img_validate                               
+00003360  bootutil_key_cnt                                    
+00003348  bootutil_keys                                       
+00003001  bootutil_max_image_size                             
+00001c99  bootutil_tlv_iter_begin                             
+00001ec5  bootutil_tlv_iter_next                              
+000015f1  bootutil_verify_sig                                 
+4e020000  ccfg                                                
+00000d2d  context_boot_go                                     
+00002ddd  delay                                               
+00002e15  flash_area_align                                    
+0000284f  flash_area_close                                    
+0000255d  flash_area_erase                                    
+00002ec3  flash_area_erased_val                               
+00002615  flash_area_get_sectors                              
+00002ed1  flash_area_id_from_multi_image_slot                 
+00002b71  flash_area_open                                     
+00002b1f  flash_area_read                                     
+0000274d  flash_area_write                                    
+00002f2d  lightRedLed                                         
+000008e1  mADD                                                
+00001bd1  mINVK                                               
+0000073d  mMULT                                               
+000009f1  mOUT                                                
+00001afd  mSET                                                
+00000969  mSUB                                                
+000023a1  main                                                
+00002317  mbedtls_asn1_get_alg                                
+00002a3d  mbedtls_asn1_get_bitstring_null                     
+00001f71  mbedtls_asn1_get_len                                
+00002b99  mbedtls_asn1_get_tag                                
+00002d41  mbedtls_platform_zeroize                            
+00002d71  powerUpGpio                                         
+00002e6b  resetISR                                            
+00000000  resetVectors                                        
+000030a8  root_pub_der                                        
+00003368  root_pub_der_len                                    
+4e020000  ti_utils_build_GenMap_sym_CRC_CCFG_BOOT_CFG_begin   
+4e02000b  ti_utils_build_GenMap_sym_CRC_CCFG_BOOT_CFG_end     
+4e0207d0  ti_utils_build_GenMap_sym_CRC_CCFG_DEBUG_begin      
+4e0207fb  ti_utils_build_GenMap_sym_CRC_CCFG_DEBUG_end        
+4e020750  ti_utils_build_GenMap_sym_CRC_CCFG_USER_RECORD_begin
+4e0207cb  ti_utils_build_GenMap_sym_CRC_CCFG_USER_RECORD_end  
+4e020010  ti_utils_build_GenMap_sym_CRC_CCFG_begin            
+4e02074b  ti_utils_build_GenMap_sym_CRC_CCFG_end              
+00002791  zADD                                                
+00002703  zADD32                                              
+0000228d  zMACC32                                             
+000021fd  zSUB                                                
+00002937  zSUB32                                              
+
+
+GLOBAL SYMBOLS: SORTED BY Symbol Address 
+
+address   name                                                
+-------   ----                                                
+00000000  __TI_ATRegion0_region_sz                            
+00000000  __TI_ATRegion0_src_addr                             
+00000000  __TI_ATRegion0_trg_addr                             
+00000000  __TI_ATRegion1_region_sz                            
+00000000  __TI_ATRegion1_src_addr                             
+00000000  __TI_ATRegion1_trg_addr                             
+00000000  __TI_ATRegion2_region_sz                            
+00000000  __TI_ATRegion2_src_addr                             
+00000000  __TI_ATRegion2_trg_addr                             
+00000000  __TI_static_base__                                  
+00000000  resetVectors                                        
+0000008d  SCALARMUL_core                                      
+00000400  __STACK_SIZE                                        
+0000040d  ATOMICPATTERN                                       
+0000073d  mMULT                                               
+000008e1  mADD                                                
+00000969  mSUB                                                
+000009f1  mOUT                                                
+00000a4d  ECCSW_ECDSAVerify                                   
+00000d2d  context_boot_go                                     
+00000f39  bootutil_img_validate                               
+00001141  INVERT                                              
+00001319  JACADD                                              
+000014c1  ECCSW_validatePublicKeyWeierstrass                  
+000015f1  bootutil_verify_sig                                 
+00001829  SCALARMUL_init                                      
+0000191b  SlCrypto_ecdsa_p256_drop                            
+0000191d  ECDSA_verify                                        
+00001a0d  SCALARMUL_final                                     
+00001afd  mSET                                                
+00001bd1  mINVK                                               
+00001c99  bootutil_tlv_iter_begin                             
+00001d5d  boot_read_swap_state                                
+00001e15  boot_slots_compatible                               
+00001ec3  SlCrypto_ecdsa_p256_init                            
+00001ec5  bootutil_tlv_iter_next                              
+00001f71  mbedtls_asn1_get_len                                
+00002000  __SYSMEM_SIZE                                       
+0000201d  boot_swap_type_multi                                
+000020c5  __udivmoddi4                                        
+00002167  SQUAREMULTIPLYWORD                                  
+000021fb  SlCrypto_sha256_drop                                
+000021fd  zSUB                                                
+0000228d  zMACC32                                             
+00002317  mbedtls_asn1_get_alg                                
+0000239f  __aeabi_ldiv0                                       
+000023a1  main                                                
+00002419  __TI_decompress_lzss                                
+00002491  GETDIGITL2R                                         
+000024f9  boot_copy_region                                    
+0000255d  flash_area_erase                                    
+000025c1  SlCrypto_ecdsa_p256_verify                          
+00002615  flash_area_get_sectors                              
+00002703  zADD32                                              
+0000274d  flash_area_write                                    
+00002791  zADD                                                
+00002813  GETDIGIT                                            
+0000284f  flash_area_close                                    
+00002851  __TI_auto_init_nobinit_nopinit                      
+0000288d  __muldsi3                                           
+000028c7  IMPORTOPERAND                                       
+00002937  zSUB32                                              
+000029a5  SAVEPOINT                                           
+000029d9  boot_read_image_header                              
+00002a0d  blinkLed                                            
+00002a3d  mbedtls_asn1_get_bitstring_null                     
+00002a9b  bootutil_buffer_is_erased                           
+00002ac9  SetupTrimDevice                                     
+00002b1f  flash_area_read                                     
+00002b49  boot_read_swap_state_by_id                          
+00002b71  flash_area_open                                     
+00002b99  mbedtls_asn1_get_tag                                
+00002bc1  __aeabi_lmul                                        
+00002bc1  __muldi3                                            
+00002be5  _c_int00                                            
+00002c09  IMPORTMODULUS                                       
+00002c29  boot_go                                             
+00002c89  __aeabi_llsl                                        
+00002c89  __ashldi3                                           
+00002ca9  _args_main                                          
+00002cc5  BUFFERSEQUAL                                        
+00002cdf  EXPORTOPERAND                                       
+00002cf9  SlCrypto_sha256_final                               
+00002d11  SlCrypto_sha256_init                                
+00002d29  SlCrypto_sha256_update                              
+00002d41  mbedtls_platform_zeroize                            
+00002d71  powerUpGpio                                         
+00002d89  IMPORTDATA                                          
+00002d9f  SETOPERAND                                          
+00002db5  ISALLZEROS                                          
+00002dc9  __aeabi_uldivmod                                    
+00002ddd  delay                                               
+00002e15  flash_area_align                                    
+00002e27  TI_memcpy_small                                     
+00002e39  __TI_decompress_none                                
+00002e5b  boot_read_image_ok                                  
+00002e6b  resetISR                                            
+00002e7b  __TI_zero_init                                      
+00002e8b  COPY                                                
+00002eb5  ZERO                                                
+00002ec3  flash_area_erased_val                               
+00002ed1  flash_area_id_from_multi_image_slot                 
+00002edf  TI_memset_small                                     
+00002f21  __aeabi_memclr                                      
+00002f21  __aeabi_memclr4                                     
+00002f21  __aeabi_memclr8                                     
+00002f2d  lightRedLed                                         
+00002f93  boot_swap_info_off                                  
+00002fe9  SETWORD                                             
+00002ff1  __aeabi_memcpy                                      
+00002ff1  __aeabi_memcpy4                                     
+00002ff1  __aeabi_memcpy8                                     
+00002ff9  boot_fih_memequal                                   
+00003001  bootutil_max_image_size                             
+00003021  CryptoKeyPlaintext_initKey                          
+00003025  IMPORTLENGTH                                        
+00003029  _system_pre_init                                    
+0000302c  C$$EXIT                                             
+0000302d  abort                                               
+00003030  LUTJ                                                
+000030a8  root_pub_der                                        
+00003103  LUTSTATE                                            
+00003140  ECC_NISTP256_a                                      
+00003164  ECC_NISTP256_a_mont                                 
+00003188  ECC_NISTP256_b                                      
+000031ac  ECC_NISTP256_b_mont                                 
+000031d0  ECC_NISTP256_generatorX                             
+000031f4  ECC_NISTP256_generatorY                             
+00003218  ECC_NISTP256_k_mont                                 
+0000323c  ECC_NISTP256_order                                  
+00003260  ECC_NISTP256_prime                                  
+00003284  LUTC                                                
+0000329c  LUTINCI                                             
+000032b4  LUTOPSIGN                                           
+000032cc  LUTSE                                               
+00003308  boot_img_magic                                      
+00003348  bootutil_keys                                       
+00003358  LUTOPCODE                                           
+00003360  bootutil_key_cnt                                    
+00003368  root_pub_der_len                                    
+0000336c  __c_args__                                          
+00003384  __TI_Handler_Table_Base                             
+00003390  __TI_Handler_Table_Limit                            
+00003398  __TI_CINIT_Base                                     
+000033a8  __TI_CINIT_Limit                                    
+000033a8  __TI_CINIT_Warm                                     
+20000000  __start___llvm_prf_bits                             
+20000000  __start___llvm_prf_cnts                             
+20000000  __stop___llvm_prf_bits                              
+20000000  __stop___llvm_prf_cnts                              
+20002568  _sys_memory                                         
+200045cc  FIH_FAILURE                                         
+200045d0  FIH_NO_BOOTABLE_IMAGE                               
+200045d4  FIH_SUCCESS                                         
+20008c00  __stack                                             
+20009000  __STACK_END                                         
+4e020000  ccfg                                                
+4e020000  ti_utils_build_GenMap_sym_CRC_CCFG_BOOT_CFG_begin   
+4e02000b  ti_utils_build_GenMap_sym_CRC_CCFG_BOOT_CFG_end     
+4e020010  ti_utils_build_GenMap_sym_CRC_CCFG_begin            
+4e02074b  ti_utils_build_GenMap_sym_CRC_CCFG_end              
+4e020750  ti_utils_build_GenMap_sym_CRC_CCFG_USER_RECORD_begin
+4e0207cb  ti_utils_build_GenMap_sym_CRC_CCFG_USER_RECORD_end  
+4e0207d0  ti_utils_build_GenMap_sym_CRC_CCFG_DEBUG_begin      
+4e0207fb  ti_utils_build_GenMap_sym_CRC_CCFG_DEBUG_end        
+ffffffff  __TI_pprof_out_hndl                                 
+ffffffff  __TI_prof_data_size                                 
+ffffffff  __TI_prof_data_start                                
+ffffffff  __binit__                                           
+ffffffff  binit                                               
+UNDEFED   __mpu_init                                          
+UNDEFED   _system_post_cinit                                  
+
+[172 symbols]

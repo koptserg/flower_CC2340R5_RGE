@@ -241,7 +241,7 @@ MAIN()
 
   g_dev_ctx.ota_attr.manufacturer = 0xBEBE;
   g_dev_ctx.ota_attr.image_type = 0x2340;
-  g_dev_ctx.ota_attr.file_version = 0x00000004;
+  g_dev_ctx.ota_attr.file_version = 0x00000001;
 
   /* Global ZBOSS initialization */
   ZB_INIT("on_off_switch");

@@ -6,6 +6,6 @@
 
 ![](/images/photo_2025-10-31_19-38-26.jpg)
 ![](/images/photo_2025-10-31_19-39-06.jpg)
+Проект [OSHWLab](https://oshwlab.com/koptserg/zigbee_cc2340_cr2032)
 
 ![](/images/2025-10-31_194809.png)
-Проект [OSHWLab zigbee_cc2340_cr2032](https://oshwlab.com/koptserg/zigbee_cc2340_cr2032)

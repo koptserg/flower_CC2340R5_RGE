@@ -3,7 +3,7 @@
 ![](/images/2025-10-31_203427.png)
 ### Аппаратные средства
 1. Flower_CC2340R5_RGE
-2. LP-XDS110(ET)
+2. LP-XDS110(ET) или LP-CC2652R7(CC26X2R1_LAUNCHXL)
 
 ![](/images/photo_2025-10-31_19-38-26.jpg)
 ![](/images/photo_2025-10-31_19-39-06.jpg)

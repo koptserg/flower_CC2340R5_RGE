@@ -33,3 +33,9 @@
 1. [SimpleLink Low Power F3 SDK 8.40.02.01](https://dr-download.ti.com/software-development/software-development-kit-sdk/MD-emMPuXshOG/8.40.02.01/simplelink_lowpower_f3_sdk_8_40_02_01.exe)
 2. [Code Composer Studio 12.8.1](https://dr-download.ti.com/software-development/ide-configuration-compiler-or-debugger/MD-J1VdearkvK/12.8.1/CCS12.8.1.00005_win64.zip)
 3. [UniFlash 9.2.0](https://dr-download.ti.com/software-development/software-programming-tool/MD-QeJBJLj8gq/9.2.0/uniflash_sl.9.2.0.5300.exe)
+### Прошивка с помощью UniFlash 9.2.0 проектов mcuboot_flower_CC2340R5_RGE и flower_ota_onchip_CC2340R5_RGE
+```ruby
+C:\Users\Sergey\workspace_v12\mcuboot_flower_CC2340R5_RGE\Debug\mcuboot_flower_CC2340R5_RGE.hex
+C:\Users\Sergey\workspace_v12\flower_ota_onchip_CC2340R5_RGE\Debug\flower_ota_onchip_CC2340R5_RGE_ota.bin
+```
+   ![](/images/2025-07-08_104419.png)

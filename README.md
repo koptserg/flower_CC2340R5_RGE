@@ -38,4 +38,5 @@
 C:\Users\Sergey\workspace_v12\mcuboot_flower_CC2340R5_RGE\Debug\mcuboot_flower_CC2340R5_RGE.hex
 C:\Users\Sergey\workspace_v12\flower_ota_onchip_CC2340R5_RGE\Debug\flower_ota_onchip_CC2340R5_RGE_ota.bin
 ```
-   ![](/images/2025-07-08_104419.png)
+   ![](/images/2025-11-24_190623.png)
+   ![](/images/2025-11-24_191048.png)

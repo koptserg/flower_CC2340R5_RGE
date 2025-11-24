@@ -295,11 +295,11 @@ typedef struct device_basic_attr_s
   zb_uint8_t hw_version;
   zb_char_t mf_name[32];
   zb_char_t model_id[32];
-  zb_char_t date_code[32];
+  zb_char_t date_code[16];
   zb_uint8_t power_source;
   zb_char_t location_id[5];
   zb_uint8_t ph_env;
-  zb_char_t sw_build_id[32];
+  zb_char_t sw_build_id[16];
 } device_basic_attr_t;
 
 /* attributes of Identify cluster */
@@ -402,6 +402,7 @@ extern on_off_switch_ota_ctx_t g_dev_ctx;
 /*** OTA API ***/
 void dl_process_ota_upgrade_cb(zb_uint8_t param);
 void dl_ota_start_upgrade(zb_uint8_t param);
+void device_reset_after(zb_uint8_t param);
 
 extern zb_uint8_t button_number;
 extern zb_bool_t button_state;

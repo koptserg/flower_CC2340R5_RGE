@@ -230,10 +230,10 @@ MAIN()
    */
   ZB_ZCL_SET_STRING_VAL(g_dev_ctx.basic_attr.date_code, date_code, 14); // date_code[] = "08.09.25 20:40"
 
-  ZB_ZCL_SET_STRING_VAL(g_dev_ctx.basic_attr.sw_build_id, "switch_onchip", 13);
+  ZB_ZCL_SET_STRING_VAL(g_dev_ctx.basic_attr.sw_build_id, "flower_onchip", 13);
 
   ZB_ZCL_SET_STRING_VAL(g_dev_ctx.basic_attr.mf_name, "DIYRuZ", 6);
-  ZB_ZCL_SET_STRING_VAL(g_dev_ctx.basic_attr.model_id, "DIYRuZ_SW2340R5", 15);
+  ZB_ZCL_SET_STRING_VAL(g_dev_ctx.basic_attr.model_id, "DIYRuZ_FW2340R5", 15);
 
   g_dev_ctx.soil_moisure_attr.value = ZB_ZCL_SOIL_MOISTURE_MEASUREMENT_VALUE_DEFAULT_VALUE;
   g_dev_ctx.soil_moisure_attr.min_value = ZB_ZCL_SOIL_MOISTURE_MEASUREMENT_MIN_VALUE_DEFAULT_VALUE;
@@ -241,7 +241,7 @@ MAIN()
 
   g_dev_ctx.ota_attr.manufacturer = 0xBEBE;
   g_dev_ctx.ota_attr.image_type = 0x2340;
-  g_dev_ctx.ota_attr.file_version = 0x00000001;
+  g_dev_ctx.ota_attr.file_version = 0x24000001;
 
   /* Global ZBOSS initialization */
   ZB_INIT("on_off_switch");

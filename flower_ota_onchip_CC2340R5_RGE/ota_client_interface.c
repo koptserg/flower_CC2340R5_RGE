@@ -98,9 +98,11 @@ void dl_process_ota_upgrade_cb(zb_uint8_t param)
       break;
 
     case ZB_ZCL_OTA_UPGRADE_STATUS_FINISH:
-      zb_zcl_ota_upgrade_file_upgraded(ZB_SWITCH_ENDPOINT);
+//      zb_zcl_ota_upgrade_file_upgraded(ZB_SWITCH_ENDPOINT);
+//      zb_zcl_ota_upgrade_file_upgraded(ZB_OTA_ENDPOINT);
       /* Do not reset immediately - lets finish ZCL pkts exchange etc */
-      ZB_SCHEDULE_APP_ALARM(dl_device_reset_after_upgrade, 0, ZB_TIME_ONE_SECOND * 15);
+//      ZB_SCHEDULE_APP_ALARM(dl_device_reset_after_upgrade, 0, ZB_TIME_ONE_SECOND * 15);
+      ZB_SCHEDULE_APP_ALARM(device_reset_after, 0, ZB_TIME_ONE_SECOND * 15);
       value->upgrade_status = ZB_ZCL_OTA_UPGRADE_STATUS_OK;
       break;
 

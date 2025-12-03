@@ -44,7 +44,6 @@ const device = {
         },
         exposes: [
             e.battery(),
-            e.battery_voltage(),
             e.soil_moisture(),
         ],
 };

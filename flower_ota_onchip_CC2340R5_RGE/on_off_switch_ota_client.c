@@ -109,11 +109,13 @@ void device_interface_cb(zb_uint8_t param);
 void device_reset_after(zb_uint8_t param);
 void led_blink(zb_uint8_t count);
 void led_blink_cb(zb_uint8_t count, zb_uint8_t led_no);
-void update_attr_value(void);
+void update_attr_value(zb_bool_t send_attrib);
 zb_uint16_t soil_moisture(zb_uint8_t adcCount);
 void pwm_init_param(void);
-void timer_report(zb_uint8_t param);
+void timer_update(zb_uint8_t param);
 void adc_init_param(void);
+
+static void configure_attribute_reporting(void);
 
 /****** Cluster declarations ******/
 /* Switch config cluster attributes */
@@ -200,6 +202,8 @@ ZB_HA_DECLARE_ON_OFF_SWITCH_1_EP(on_off_switch_ep_1, ZB_SWITCH_ENDPOINT, on_off_
 ZB_HA_DECLARE_ON_OFF_SWITCH_2_EP(on_off_switch_ep_2, ZB_OTA_ENDPOINT, on_off_switch_clusters_2);
 /* Declare application's device context for 3 endpoint */
 ZBOSS_DECLARE_DEVICE_CTX_2_EP(on_off_switch_ctx, on_off_switch_ep_1, on_off_switch_ep_2);
+//ZBOSS_DEVICE_DECLARE_REPORTING_CTX(rep_ctx, rep_count);
+
 
 void my_main_loop()
 {
@@ -241,7 +245,7 @@ MAIN()
 
   g_dev_ctx.ota_attr.manufacturer = 0xBEBE;
   g_dev_ctx.ota_attr.image_type = 0x2340;
-  g_dev_ctx.ota_attr.file_version = 0x24000001;
+  g_dev_ctx.ota_attr.file_version = 0x24000002;
 
   /* Global ZBOSS initialization */
   ZB_INIT("on_off_switch");
@@ -311,7 +315,7 @@ MAIN()
     pwm_init_param();
     adc_init_param();
 
-    timer_report(0);
+//    timer_update(0);
 
     GPIO_setConfig(CONFIG_GPIO_BTN1, GPIO_CFG_IN_PU);
 /*
@@ -411,8 +415,8 @@ zb_uint8_t zcl_specific_cluster_cmd_handler(zb_uint8_t param)
 
 void send_toggle_req(zb_uint8_t param)
 {
-  zb_uint16_t addr = 0;
-
+  zb_uint16_t addr = 0x0000;
+//    zb_uint16_t addr = 0x3983;
   ZB_ASSERT(param);
 
   if (ZB_JOINED()  && !cmd_in_progress)
@@ -421,14 +425,30 @@ void send_toggle_req(zb_uint8_t param)
     Log_printf(LogModule_Zigbee_App, Log_INFO, "send_toggle_req %d - send toggle", param);
 
     /* Destination address and endpoint are unknown; command will be sent via binding */
+
     ZB_ZCL_ON_OFF_SEND_TOGGLE_REQ(
       param,
       addr,
       ZB_APS_ADDR_MODE_DST_ADDR_ENDP_NOT_PRESENT,
-      0,
+//      ZB_APS_ADDR_MODE_16_ENDP_PRESENT,
+//      ZB_APS_ADDR_MODE_16_GROUP_ENDP_NOT_PRESENT,
+//      0,
+      1,
       ZB_SWITCH_ENDPOINT,
       ZB_AF_HA_PROFILE_ID,
       ZB_FALSE, NULL);
+/*
+    ZB_ZCL_ON_OFF_SEND_REQ(
+        param,
+        addr,
+        ZB_APS_ADDR_MODE_16_ENDP_PRESENT,
+        1,
+        ZB_SWITCH_ENDPOINT,
+        ZB_AF_HA_PROFILE_ID,
+        ZB_ZCL_DISABLE_DEFAULT_RESPONSE,
+        ZB_ZCL_CMD_ON_OFF_TOGGLE_ID,
+        NULL)
+*/
   }
   else
   {
@@ -459,16 +479,77 @@ void led_blink(zb_uint8_t count)
     }
 }
 
-void timer_report(zb_uint8_t param)
+void timer_update(zb_uint8_t param)
 {
-      update_attr_value();
-      ZB_SCHEDULE_APP_ALARM(timer_report, param, ZB_TIME_ONE_SECOND *600); // 10 minute
+      update_attr_value(false);
+//      ZB_SCHEDULE_APP_ALARM(timer_update, param, ZB_TIME_ONE_SECOND *600); // 10 minute
+      ZB_SCHEDULE_APP_ALARM(timer_update, param, ZB_TIME_ONE_SECOND *10); // 10 sec
 }
 
 long map(long x, long in_min, long in_max, long out_min, long out_max)
 {
     long result = (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
     return MIN(out_max, MAX(result, out_min));
+}
+
+//---------------------------------------------------------------------------------------------
+// configure attribute reporting
+//
+
+#define RPT_MIN 10
+#define RPT_MAX 1800
+
+static void configure_attribute_reporting(void){
+
+    zb_zcl_reporting_info_t reporting_info;
+    zb_ret_t status;
+
+    memset(&reporting_info, 0, sizeof(reporting_info));
+    reporting_info.direction = ZB_ZCL_CONFIGURE_REPORTING_SEND_REPORT;
+    reporting_info.ep = ZB_SWITCH_ENDPOINT;
+    reporting_info.cluster_id = ZB_ZCL_CLUSTER_ID_POWER_CONFIG;
+    reporting_info.cluster_role = ZB_ZCL_CLUSTER_SERVER_ROLE;
+    reporting_info.attr_id = ZB_ZCL_ATTR_POWER_CONFIG_BATTERY_PERCENTAGE_REMAINING_ID;
+    reporting_info.dst.short_addr = 0x0000;
+    reporting_info.dst.endpoint = 1;
+    reporting_info.dst.profile_id = ZB_AF_HA_PROFILE_ID;
+    reporting_info.manuf_code = ZB_ZCL_MANUFACTURER_WILDCARD_ID,
+    reporting_info.u.send_info.min_interval = RPT_MIN;
+    reporting_info.u.send_info.max_interval = RPT_MAX;
+    reporting_info.u.send_info.delta.u8 = 2;
+    reporting_info.u.send_info.reported_value.u8 = 0;
+    reporting_info.u.send_info.def_min_interval = RPT_MIN;
+    reporting_info.u.send_info.def_max_interval = RPT_MAX;
+    status = zb_zcl_put_reporting_info(&reporting_info, ZB_TRUE);
+    if (status == RET_OK) {
+        Log_printf(LogModule_Zigbee_App, Log_INFO, "Power reporting configured successfully");
+    } else {
+        Log_printf(LogModule_Zigbee_App, Log_INFO, "Failed to configure power reporting: %d", status);
+    }
+
+    memset(&reporting_info, 0, sizeof(reporting_info));
+    reporting_info.direction = ZB_ZCL_CONFIGURE_REPORTING_SEND_REPORT;
+    reporting_info.ep = ZB_SWITCH_ENDPOINT;
+    reporting_info.cluster_id = ZB_ZCL_CLUSTER_ID_SOIL_MOISTURE_MEASUREMENT;
+    reporting_info.cluster_role = ZB_ZCL_CLUSTER_SERVER_ROLE;
+    reporting_info.attr_id = ZB_ZCL_ATTR_SOIL_MOISTURE_MEASUREMENT_VALUE_ID;
+    reporting_info.dst.short_addr = 0x0000;
+    reporting_info.dst.endpoint = 1;
+    reporting_info.dst.profile_id = ZB_AF_HA_PROFILE_ID;
+    reporting_info.manuf_code = ZB_ZCL_MANUFACTURER_WILDCARD_ID,
+    reporting_info.u.send_info.min_interval = RPT_MIN;
+    reporting_info.u.send_info.max_interval = RPT_MAX;
+    reporting_info.u.send_info.delta.u16 = 100;
+    reporting_info.u.send_info.reported_value.u16 = 0x0000;
+    reporting_info.u.send_info.def_min_interval = RPT_MIN;
+    reporting_info.u.send_info.def_max_interval = RPT_MAX;
+    status = zb_zcl_put_reporting_info(&reporting_info, ZB_TRUE);
+    if (status == RET_OK) {
+        Log_printf(LogModule_Zigbee_App, Log_INFO, "Soil moisture reporting configured successfully");
+    } else {
+        Log_printf(LogModule_Zigbee_App, Log_INFO, "Failed to configure Soil moisture reporting: %d", status);
+    }
+
 }
 
 void send_voltage(zb_uint8_t param)
@@ -564,7 +645,7 @@ zb_uint8_t getBatteryRemainingPercentageZCLCR2032(zb_uint16_t volt16) {
     return (zb_uint8_t)(battery_level * 2);
 }
 
-void update_attr_value(void)
+void update_attr_value(zb_bool_t send_attrib)
 {
     zb_uint16_t currentVoltage = BatteryMonitor_getVoltage() + BATTERY_MONITOR_COMPENSATION;
     zb_uint8_t zclVoltage = currentVoltage/100;
@@ -607,9 +688,12 @@ void update_attr_value(void)
         Log_printf(LogModule_Zigbee_App, Log_INFO, "update_attr_value Set zclPercentage value fail. zcl_status: %d", zcl_status);
     }
 
-    ZB_SCHEDULE_APP_CALLBACK(send_voltage, 0);
-    ZB_SCHEDULE_APP_ALARM(send_percentage, 1, ZB_MILLISECONDS_TO_BEACON_INTERVAL(300));
-    ZB_SCHEDULE_APP_ALARM(send_soil_moisture, 2, ZB_MILLISECONDS_TO_BEACON_INTERVAL(600));
+    if(send_attrib)
+    {
+//      ZB_SCHEDULE_APP_CALLBACK(send_voltage, 0);
+      ZB_SCHEDULE_APP_ALARM(send_percentage, 1, ZB_MILLISECONDS_TO_BEACON_INTERVAL(300));
+      ZB_SCHEDULE_APP_ALARM(send_soil_moisture, 2, ZB_MILLISECONDS_TO_BEACON_INTERVAL(600));
+    }
 }
 
 void off_network_attention(zb_uint8_t param)
@@ -691,14 +775,18 @@ void button_press_handler(zb_uint8_t param)
 //                 cmd_in_progress = ZB_FALSE;
 //                 send_toggle_req(param);
 
+//                  zb_ret_t zb_err_code;
+//                  zb_err_code = zb_buf_get_out_delayed(send_toggle_req);
+
                   Log_printf(LogModule_Zigbee_App, Log_INFO, "basic_attr_power_source %d", g_dev_ctx.basic_attr.power_source);
 //                  led_number_blink = 0;
 //                  zb_uint8_t led_count_blink = 3;
 //                  led_blink(led_count_blink*2+1);
 
-                  update_attr_value();
+                  update_attr_value(true);
+//                  configure_attribute_reporting();
               } else {
-                  soil_moisture(10);
+//                  soil_moisture(10);
               }
           }
       }
@@ -813,6 +901,9 @@ void zboss_signal_handler(zb_uint8_t param)
         device_type = zb_get_device_type();
         ZVUNUSED(device_type);
         Log_printf(LogModule_Zigbee_App, Log_INFO, "Device (%d) STARTED OK", device_type);
+
+        configure_attribute_reporting();
+        timer_update(0); //
 
 //        zb_zdo_pim_set_long_poll_interval(ED_POLL_RATE);
 

@@ -223,12 +223,18 @@
 
 #define ZB_HA_ON_OFF_SWITCH_1_IN_CLUSTER_NUM 5  /*!< On/Off switch IN clusters number */
 #define ZB_HA_ON_OFF_SWITCH_1_OUT_CLUSTER_NUM 4 /*!< On/Off switch OUT clusters number */
+// Number of attributes for reporting on Zicada sensor
+// battery percentage remaining, battery alarm + battery voltage
+//#define ZB_ON_OFF_SWITCH_REPORT_ATTR_COUNT (ZB_ZCL_POWER_CONFIG_REPORT_ATTR_COUNT + 1 + ZB_ZCL_SOIL_MOISTURE_MEASUREMENT_REPORT_ATTR_COUNT)
+#define ZB_ON_OFF_SWITCH_REPORT_ATTR_COUNT (ZB_ZCL_POWER_CONFIG_REPORT_ATTR_COUNT + 1)
 #define ZB_HA_DECLARE_ON_OFF_SWITCH_1_EP(ep_name, ep_id, cluster_list) \
   ZB_ZCL_DECLARE_ON_OFF_SWITCH_1_SIMPLE_DESC(                          \
       ep_name,                                                       \
       ep_id,                                                         \
       ZB_HA_ON_OFF_SWITCH_1_IN_CLUSTER_NUM,                            \
       ZB_HA_ON_OFF_SWITCH_1_OUT_CLUSTER_NUM);                          \
+  ZBOSS_DEVICE_DECLARE_REPORTING_CTX(reporting_info## ep_name,              \
+        ZB_ON_OFF_SWITCH_REPORT_ATTR_COUNT);                                           \
   ZB_AF_DECLARE_ENDPOINT_DESC(ep_name,                                  \
                               ep_id,                                    \
       ZB_AF_HA_PROFILE_ID,                                           \
@@ -237,7 +243,7 @@
       ZB_ZCL_ARRAY_SIZE(cluster_list, zb_zcl_cluster_desc_t),        \
       cluster_list,                                                  \
       (zb_af_simple_desc_1_1_t*)&simple_desc_##ep_name, \
-      0, NULL, /* No reporting ctx */           \
+      ZB_ON_OFF_SWITCH_REPORT_ATTR_COUNT, reporting_info## ep_name, /* reporting ctx */           \
       0, NULL) /* No CVC ctx */
 
 #define ZB_ZCL_DECLARE_ON_OFF_SWITCH_2_SIMPLE_DESC(ep_name, ep_id, in_clust_num, out_clust_num) \

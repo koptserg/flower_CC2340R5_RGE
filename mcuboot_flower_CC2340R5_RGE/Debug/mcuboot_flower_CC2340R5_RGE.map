@@ -1,7 +1,7 @@
 ******************************************************************************
             TI ARM Clang Linker PC v3.2.2                      
 ******************************************************************************
->> Linked Tue Nov 11 18:26:33 2025
+>> Linked Mon Nov 24 18:44:33 2025
 
 OUTPUT FILE NAME:   <mcuboot_flower_CC2340R5_RGE.out>
 ENTRY POINT SYMBOL: "resetISR"  address: 00002e6b

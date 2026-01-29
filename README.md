@@ -7,7 +7,7 @@
 
 ![](/images/photo_2025-10-31_19-38-26.jpg)
 ![](/images/photo_2025-10-31_19-39-06.jpg)
-Проект [OSHWLab](https://oshwlab.com/koptserg/zigbee_cc2340_cr2032)
+Проект [V1 OSHWLab](https://oshwlab.com/koptserg/zigbee_cc2340_cr2032) [V2 OSHWLab](https://oshwlab.com/koptserg/zigbee_cc2340_cr2032_copy)
 
 ![](/images/2025-10-31_194809.png)
 ## Управление устройством

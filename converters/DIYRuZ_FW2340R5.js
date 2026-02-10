@@ -31,6 +31,8 @@ const device = {
             fz.ignore_genIdentify,
             fz.battery,
             fz.soil_moisture,
+            fz.illuminance,
+            fz.temperature,
         ],
         toZigbee: [
             tz.factory_reset,
@@ -40,11 +42,15 @@ const device = {
             await bind(tenthEndpoint, coordinatorEndpoint, [
                 'genPowerCfg',
                 'msSoilMoisture',
+                'msIlluminanceMeasurement',
+                'msTemperatureMeasurement',
             ]);            
         },
         exposes: [
             e.battery(),
             e.soil_moisture(),
+            e.illuminance(),
+            e.temperature(),
         ],
 };
 

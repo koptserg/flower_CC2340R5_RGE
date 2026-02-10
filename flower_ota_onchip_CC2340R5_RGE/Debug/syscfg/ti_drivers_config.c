@@ -185,9 +185,11 @@ GPIO_PinConfig gpioPinConfigs[25] = {
     GPIO_CFG_OUTPUT_INTERNAL | GPIO_CFG_OUT_STR_MED | GPIO_CFG_OUT_LOW, /* CONFIG_GPIO_GLED */
     GPIO_CFG_OUTPUT_INTERNAL | GPIO_CFG_OUT_STR_MED | GPIO_CFG_OUT_LOW, /* CONFIG_GPIO_RLED */
     GPIO_CFG_NO_DIR, /* DIO_5 */
-    GPIO_CFG_NO_DIR, /* DIO_6 */
+    /* Owned by CONFIG_I2C_0 as SCL */
+    GPIO_CFG_INPUT_INTERNAL | GPIO_CFG_IN_INT_NONE | GPIO_CFG_PULL_UP_INTERNAL, /* CONFIG_GPIO_I2C_0_SCL */
     GPIO_CFG_NO_DIR, /* DIO_7 */
-    GPIO_CFG_NO_DIR, /* DIO_8 */
+    /* Owned by CONFIG_I2C_0 as SDA */
+    GPIO_CFG_INPUT_INTERNAL | GPIO_CFG_IN_INT_NONE | GPIO_CFG_PULL_UP_INTERNAL, /* CONFIG_GPIO_I2C_0_SDA */
     GPIO_CFG_NO_DIR, /* DIO_9 */
     GPIO_CFG_NO_DIR, /* DIO_10 */
     GPIO_CFG_NO_DIR, /* DIO_11 */
@@ -227,6 +229,8 @@ const uint_least8_t CONFIG_GPIO_ADC_0_CHANNEL_CONST = CONFIG_GPIO_ADC_0_CHANNEL;
 const uint_least8_t CONFIG_GPIO_GLED_CONST = CONFIG_GPIO_GLED;
 const uint_least8_t CONFIG_GPIO_RLED_CONST = CONFIG_GPIO_RLED;
 const uint_least8_t CONFIG_GPIO_BTN1_CONST = CONFIG_GPIO_BTN1;
+const uint_least8_t CONFIG_GPIO_I2C_0_SDA_CONST = CONFIG_GPIO_I2C_0_SDA;
+const uint_least8_t CONFIG_GPIO_I2C_0_SCL_CONST = CONFIG_GPIO_I2C_0_SCL;
 const uint_least8_t CONFIG_GPIO_LGPTIMER_0_CH0_CONST = CONFIG_GPIO_LGPTIMER_0_CH0;
 
 /*
@@ -238,6 +242,57 @@ const GPIO_Config GPIO_config = {
     .userArgs = gpioUserArgs,
     .intPriority = (~0)
 };
+
+/*
+ *  =============================== I2C ===============================
+ */
+
+#include <ti/drivers/I2C.h>
+#include <ti/drivers/i2c/I2CLPF3.h>
+#include <ti/drivers/Power.h>
+
+#include <ti/devices/DeviceFamily.h>
+#include DeviceFamily_constructPath(inc/hw_ints.h)
+#include DeviceFamily_constructPath(inc/hw_memmap.h)
+
+#define CONFIG_I2C_COUNT 1
+
+/*
+ *  ======== I2CLPF3_objects ========
+ */
+I2CLPF3_Object I2CLPF3_objects[CONFIG_I2C_COUNT];
+
+/*
+ *  ======== I2CLPF3_hwAttrs ========
+ */
+const I2CLPF3_HWAttrs I2CLPF3_hwAttrs[CONFIG_I2C_COUNT] = {
+    /* CONFIG_I2C_0 */
+    {
+        .baseAddr    = I2C0_BASE,
+        .powerMngrId = PowerLPF3_PERIPH_I2C0,
+        .intNum      = INT_I2C0_IRQ,
+        .intPriority = (~0),
+        .swiPriority = 0,
+        .sclPin      = CONFIG_GPIO_I2C_0_SCL,
+        .sclPinMux   = GPIO_MUX_PORTCFG_PFUNC2,
+        .sdaPin      = CONFIG_GPIO_I2C_0_SDA,
+        .sdaPinMux   = GPIO_MUX_PORTCFG_PFUNC4
+    },
+};
+
+/*
+ *  ======== I2C_config ========
+ */
+const I2C_Config I2C_config[CONFIG_I2C_COUNT] = {
+    /* CONFIG_I2C_0 */
+    {
+        .object      = &I2CLPF3_objects[CONFIG_I2C_0],
+        .hwAttrs     = &I2CLPF3_hwAttrs[CONFIG_I2C_0]
+    },
+};
+
+const uint_least8_t CONFIG_I2C_0_CONST = CONFIG_I2C_0;
+const uint_least8_t I2C_count = CONFIG_I2C_COUNT;
 
 /*
  *  =============== LGPTimer ===============

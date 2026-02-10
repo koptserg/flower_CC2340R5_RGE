@@ -3,12 +3,14 @@
 syscfg/ti_drivers_config.o: syscfg/ti_drivers_config.c \
  C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/devices/DeviceFamily.h \
  syscfg/ti_drivers_config.h \
+ C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/drivers/I2C.h \
+ C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/drivers/dpl/HwiP.h \
+ C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/drivers/dpl/SemaphoreP.h \
  C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/drivers/ADC.h \
  C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/drivers/adc/ADCLPF3.h \
  C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/drivers/Power.h \
  C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/drivers/utils/List.h \
  C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/drivers/power/PowerCC23X0.h \
- C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/drivers/dpl/HwiP.h \
  C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/drivers/dpl/ClockP.h \
  C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/devices/cc23x0r5/inc/hw_pmctl.h \
  C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/devices/cc23x0r5/inc/hw_clkctl.h \
@@ -41,7 +43,6 @@ syscfg/ti_drivers_config.o: syscfg/ti_drivers_config.c \
  C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/drivers/AESECB.h \
  C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/drivers/aesecb/AESECBLPF3.h \
  C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/drivers/cryptoutils/sharedresources/CryptoResourceLPF3.h \
- C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/drivers/dpl/SemaphoreP.h \
  C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/drivers/dma/UDMALPF3.h \
  C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/devices/cc23x0r5/driverlib/udma.h \
  C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/devices/cc23x0r5/inc/hw_ints.h \
@@ -53,9 +54,11 @@ syscfg/ti_drivers_config.o: syscfg/ti_drivers_config.c \
  C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/drivers/cryptoutils/ecc/ECCParams.h \
  C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/drivers/ecdh/ECDHLPF3SW.h \
  C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/third_party/ecc/include/lowlevelapi.h \
+ C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/drivers/i2c/I2CLPF3.h \
+ C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/drivers/dpl/SwiP.h \
+ C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/devices/cc23x0r5/inc/hw_ints.h \
  C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/drivers/timer/LGPTimerLPF3.h \
  C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/devices/cc23x0r5/inc/hw_lgpt.h \
- C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/devices/cc23x0r5/inc/hw_ints.h \
  C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/drivers/NVS.h \
  C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/drivers/nvs/NVSLPF3.h \
  C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/drivers/PWM.h \
@@ -78,6 +81,12 @@ C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/devices/DeviceFamily.h:
 
 syscfg/ti_drivers_config.h:
 
+C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/drivers/I2C.h:
+
+C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/drivers/dpl/HwiP.h:
+
+C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/drivers/dpl/SemaphoreP.h:
+
 C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/drivers/ADC.h:
 
 C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/drivers/adc/ADCLPF3.h:
@@ -87,8 +96,6 @@ C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/drivers/Power.h:
 C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/drivers/utils/List.h:
 
 C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/drivers/power/PowerCC23X0.h:
-
-C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/drivers/dpl/HwiP.h:
 
 C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/drivers/dpl/ClockP.h:
 
@@ -154,8 +161,6 @@ C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/drivers/aesecb/AESECBLPF3.
 
 C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/drivers/cryptoutils/sharedresources/CryptoResourceLPF3.h:
 
-C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/drivers/dpl/SemaphoreP.h:
-
 C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/drivers/dma/UDMALPF3.h:
 
 C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/devices/cc23x0r5/driverlib/udma.h:
@@ -178,11 +183,15 @@ C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/drivers/ecdh/ECDHLPF3SW.h:
 
 C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/third_party/ecc/include/lowlevelapi.h:
 
+C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/drivers/i2c/I2CLPF3.h:
+
+C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/drivers/dpl/SwiP.h:
+
+C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/devices/cc23x0r5/inc/hw_ints.h:
+
 C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/drivers/timer/LGPTimerLPF3.h:
 
 C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/devices/cc23x0r5/inc/hw_lgpt.h:
-
-C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/devices/cc23x0r5/inc/hw_ints.h:
 
 C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/drivers/NVS.h:
 

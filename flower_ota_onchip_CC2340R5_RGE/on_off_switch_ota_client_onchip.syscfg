@@ -19,6 +19,8 @@ const GPIO           = scripting.addModule("/ti/drivers/GPIO");
 const GPIO2          = GPIO.addInstance();
 const GPIO3          = GPIO.addInstance();
 const GPIO4          = GPIO.addInstance();
+const I2C            = scripting.addModule("/ti/drivers/I2C", {}, false);
+const I2C1           = I2C.addInstance();
 const PWM            = scripting.addModule("/ti/drivers/PWM", {}, false);
 const PWM1           = PWM.addInstance();
 const Settings       = scripting.addModule("/ti/posix/freertos/Settings");
@@ -53,6 +55,10 @@ GPIO4.pull             = "Pull Up";
 GPIO4.interruptTrigger = "Falling Edge";
 GPIO4.gpioPin.$assign  = "DIO20_A11";
 
+I2C1.$name              = "CONFIG_I2C_0";
+I2C1.i2c.sdaPin.$assign = "DIO8";
+I2C1.i2c.sclPin.$assign = "DIO6_A1_AR+";
+
 PWM1.$name                            = "CONFIG_PWM_0";
 PWM1.timerObject.$name                = "CONFIG_LGPTIMER_0";
 PWM1.timerObject.channel0Connection   = "Pin";
@@ -78,3 +84,10 @@ const LogSinkBuf1                  = LogSinkBuf.addInstance({}, false);
 LogSinkBuf1.$name                  = "CONFIG_ti_log_LogSinkBuf_0";
 zigbee.LogModuleZigbeeLLMAC.logger = LogSinkBuf1;
 zigbee.LogModuleZigbeeApp.logger   = LogSinkBuf1;
+
+/**
+ * Pinmux solution for unlocked pins/peripherals. This ensures that minor changes to the automatic solver in a future
+ * version of the tool will not impact the pinmux you originally saw.  These lines can be completely deleted in order to
+ * re-solve from scratch.
+ */
+I2C1.i2c.$suggestSolution = "I2C0";

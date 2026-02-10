@@ -99,6 +99,8 @@
   basic_attr_list,                                                      \
   identify_attr_list,                                                     \
   battery_attr_list,                                      \
+  illuminance_attr_list,                                  \
+  temperature_attr_list,                                  \
   soil_moisure_attr_list                                  \
 )                                                                       \
   zb_zcl_cluster_desc_t cluster_list_name_1[] =                           \
@@ -142,6 +144,20 @@
     ZB_ZCL_CLUSTER_ID_SOIL_MOISTURE_MEASUREMENT,              \
     ZB_ZCL_ARRAY_SIZE(soil_moisure_attr_list, zb_zcl_attr_t),      \
     (soil_moisure_attr_list),                                      \
+    ZB_ZCL_CLUSTER_SERVER_ROLE,                               \
+    ZB_ZCL_MANUF_CODE_INVALID                                 \
+  ),                                                          \
+  ZB_ZCL_CLUSTER_DESC(                                        \
+    ZB_ZCL_CLUSTER_ID_ILLUMINANCE_MEASUREMENT,              \
+    ZB_ZCL_ARRAY_SIZE(illuminance_attr_list, zb_zcl_attr_t),      \
+    (illuminance_attr_list),                                      \
+    ZB_ZCL_CLUSTER_SERVER_ROLE,                               \
+    ZB_ZCL_MANUF_CODE_INVALID                                 \
+  ),                                                          \
+  ZB_ZCL_CLUSTER_DESC(                                        \
+    ZB_ZCL_CLUSTER_ID_TEMP_MEASUREMENT,              \
+    ZB_ZCL_ARRAY_SIZE(temperature_attr_list, zb_zcl_attr_t),      \
+    (temperature_attr_list),                                      \
     ZB_ZCL_CLUSTER_SERVER_ROLE,                               \
     ZB_ZCL_MANUF_CODE_INVALID                                 \
   ),                                                          \
@@ -214,6 +230,8 @@
       ZB_ZCL_CLUSTER_ID_ON_OFF_SWITCH_CONFIG,                                                 \
       ZB_ZCL_CLUSTER_ID_POWER_CONFIG,                                       \
       ZB_ZCL_CLUSTER_ID_SOIL_MOISTURE_MEASUREMENT,                                       \
+      ZB_ZCL_CLUSTER_ID_ILLUMINANCE_MEASUREMENT,                                       \
+      ZB_ZCL_CLUSTER_ID_TEMP_MEASUREMENT,                                       \
       ZB_ZCL_CLUSTER_ID_ON_OFF,                                                               \
       ZB_ZCL_CLUSTER_ID_SCENES,                                                               \
       ZB_ZCL_CLUSTER_ID_GROUPS,                                         \
@@ -221,12 +239,15 @@
     }                                                                                         \
   }
 
-#define ZB_HA_ON_OFF_SWITCH_1_IN_CLUSTER_NUM 5  /*!< On/Off switch IN clusters number */
+#define ZB_HA_ON_OFF_SWITCH_1_IN_CLUSTER_NUM 7  /*!< On/Off switch IN clusters number */
 #define ZB_HA_ON_OFF_SWITCH_1_OUT_CLUSTER_NUM 4 /*!< On/Off switch OUT clusters number */
 // Number of attributes for reporting on Zicada sensor
 // battery percentage remaining, battery alarm + battery voltage
-//#define ZB_ON_OFF_SWITCH_REPORT_ATTR_COUNT (ZB_ZCL_POWER_CONFIG_REPORT_ATTR_COUNT + 1 + ZB_ZCL_SOIL_MOISTURE_MEASUREMENT_REPORT_ATTR_COUNT)
-#define ZB_ON_OFF_SWITCH_REPORT_ATTR_COUNT (ZB_ZCL_POWER_CONFIG_REPORT_ATTR_COUNT + 1)
+#define ZB_ON_OFF_SWITCH_REPORT_ATTR_COUNT (ZB_ZCL_POWER_CONFIG_REPORT_ATTR_COUNT              \
+                                          + ZB_ZCL_SOIL_MOISTURE_MEASUREMENT_REPORT_ATTR_COUNT \
+                                          + ZB_ZCL_ILLUMINANCE_MEASUREMENT_REPORT_ATTR_COUNT   \
+                                          + ZB_ZCL_TEMP_MEASUREMENT_REPORT_ATTR_COUNT)
+//#define ZB_ON_OFF_SWITCH_REPORT_ATTR_COUNT (ZB_ZCL_POWER_CONFIG_REPORT_ATTR_COUNT + 1)
 #define ZB_HA_DECLARE_ON_OFF_SWITCH_1_EP(ep_name, ep_id, cluster_list) \
   ZB_ZCL_DECLARE_ON_OFF_SWITCH_1_SIMPLE_DESC(                          \
       ep_name,                                                       \
@@ -392,12 +413,29 @@ typedef struct device_soil_moisure_attr_s
   zb_uint16_t max_value;
 } device_soil_moisure_attr_t;
 
+typedef struct device_illuminance_attr_s
+{
+  zb_uint16_t value;
+  zb_uint16_t min_value;
+  zb_uint16_t max_value;
+} device_illuminance_attr_t;
+
+typedef struct device_temperature_attr_s
+{
+  zb_uint16_t value;
+  zb_uint16_t min_value;
+  zb_uint16_t max_value;
+  zb_uint16_t tolerance;
+} device_temperature_attr_t;
+
 typedef struct on_off_switch_ota_ctx_s
 {
   on_off_switch_attr_t on_off_sw_attr;
   device_basic_attr_t basic_attr;
   device_battery_attr_t battery_attr;
   device_soil_moisure_attr_t soil_moisure_attr;
+  device_illuminance_attr_t illuminance_attr;
+  device_temperature_attr_t temperature_attr;
   device_identify_attr_t identify_attr;
   device_ota_attr_t ota_attr;
   ota_upgrade_ctx_t ota_ctx;

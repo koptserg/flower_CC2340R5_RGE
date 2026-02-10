@@ -213,6 +213,7 @@ osif/ti_f3_main.o: ../osif/ti_f3_main.c \
  C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/third_party/freertos/include/task.h \
  C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/third_party/freertos/include/list.h \
  syscfg/ti_drivers_config.h \
+ C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/drivers/I2C.h \
  C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/log/Log.h
 
 C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/third_party/zigbee/zboss_r23/include/zb_common.h:
@@ -638,5 +639,7 @@ C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/third_party/freertos/include/
 C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/third_party/freertos/include/list.h:
 
 syscfg/ti_drivers_config.h:
+
+C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/drivers/I2C.h:
 
 C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/log/Log.h:

@@ -12,6 +12,8 @@ SYSCFG_SRCS += \
 ../on_off_switch_ota_client_onchip.syscfg 
 
 C_SRCS += \
+../bh1750.c \
+../bme280i2c.c \
 ../flash_interface_internal.c \
 ../on_off_switch_ota_client.c \
 ./syscfg/ti_devices_config.c \
@@ -21,7 +23,9 @@ C_SRCS += \
 ./syscfg/ti_zigbee_config.c \
 ./syscfg/ti_freertos_config.c \
 ./syscfg/ti_freertos_portable_config.c \
+../opt3001.c \
 ../ota_client_interface.c \
+../tmp102.c \
 ../version.c 
 
 GEN_FILES += \
@@ -38,6 +42,8 @@ GEN_MISC_DIRS += \
 ./syscfg 
 
 C_DEPS += \
+./bh1750.d \
+./bme280i2c.d \
 ./flash_interface_internal.d \
 ./on_off_switch_ota_client.d \
 ./syscfg/ti_devices_config.d \
@@ -47,13 +53,17 @@ C_DEPS += \
 ./syscfg/ti_zigbee_config.d \
 ./syscfg/ti_freertos_config.d \
 ./syscfg/ti_freertos_portable_config.d \
+./opt3001.d \
 ./ota_client_interface.d \
+./tmp102.d \
 ./version.d 
 
 GEN_OPTS += \
 ./syscfg/ti_utils_build_compiler.opt 
 
 OBJS += \
+./bh1750.o \
+./bme280i2c.o \
 ./flash_interface_internal.o \
 ./on_off_switch_ota_client.o \
 ./syscfg/ti_devices_config.o \
@@ -63,7 +73,9 @@ OBJS += \
 ./syscfg/ti_zigbee_config.o \
 ./syscfg/ti_freertos_config.o \
 ./syscfg/ti_freertos_portable_config.o \
+./opt3001.o \
 ./ota_client_interface.o \
+./tmp102.o \
 ./version.o 
 
 GEN_MISC_FILES += \
@@ -81,6 +93,8 @@ GEN_MISC_DIRS__QUOTED += \
 "syscfg" 
 
 OBJS__QUOTED += \
+"bh1750.o" \
+"bme280i2c.o" \
 "flash_interface_internal.o" \
 "on_off_switch_ota_client.o" \
 "syscfg\ti_devices_config.o" \
@@ -90,7 +104,9 @@ OBJS__QUOTED += \
 "syscfg\ti_zigbee_config.o" \
 "syscfg\ti_freertos_config.o" \
 "syscfg\ti_freertos_portable_config.o" \
+"opt3001.o" \
 "ota_client_interface.o" \
+"tmp102.o" \
 "version.o" 
 
 GEN_MISC_FILES__QUOTED += \
@@ -105,6 +121,8 @@ GEN_MISC_FILES__QUOTED += \
 "syscfg\FreeRTOSConfig.h" 
 
 C_DEPS__QUOTED += \
+"bh1750.d" \
+"bme280i2c.d" \
 "flash_interface_internal.d" \
 "on_off_switch_ota_client.d" \
 "syscfg\ti_devices_config.d" \
@@ -114,7 +132,9 @@ C_DEPS__QUOTED += \
 "syscfg\ti_zigbee_config.d" \
 "syscfg\ti_freertos_config.d" \
 "syscfg\ti_freertos_portable_config.d" \
+"opt3001.d" \
 "ota_client_interface.d" \
+"tmp102.d" \
 "version.d" 
 
 GEN_FILES__QUOTED += \
@@ -128,6 +148,8 @@ GEN_FILES__QUOTED += \
 "syscfg\ti_freertos_portable_config.c" 
 
 C_SRCS__QUOTED += \
+"../bh1750.c" \
+"../bme280i2c.c" \
 "../flash_interface_internal.c" \
 "../on_off_switch_ota_client.c" \
 "./syscfg/ti_devices_config.c" \
@@ -137,7 +159,9 @@ C_SRCS__QUOTED += \
 "./syscfg/ti_zigbee_config.c" \
 "./syscfg/ti_freertos_config.c" \
 "./syscfg/ti_freertos_portable_config.c" \
+"../opt3001.c" \
 "../ota_client_interface.c" \
+"../tmp102.c" \
 "../version.c" 
 
 SYSCFG_SRCS__QUOTED += \

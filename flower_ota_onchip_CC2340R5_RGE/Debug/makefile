@@ -10,6 +10,8 @@ GEN_OPTS__FLAG := @"syscfg/ti_utils_build_compiler.opt"
 GEN_CMDS__FLAG := 
 
 ORDERED_OBJS += \
+"./bh1750.o" \
+"./bme280i2c.o" \
 "./flash_interface_internal.o" \
 "./on_off_switch_ota_client.o" \
 "./syscfg/ti_devices_config.o" \
@@ -19,7 +21,9 @@ ORDERED_OBJS += \
 "./syscfg/ti_zigbee_config.o" \
 "./syscfg/ti_freertos_config.o" \
 "./syscfg/ti_freertos_portable_config.o" \
+"./opt3001.o" \
 "./ota_client_interface.o" \
+"./tmp102.o" \
 "./version.o" \
 "./osif/ti_f3_led_buttons.o" \
 "./osif/ti_f3_main.o" \
@@ -156,7 +160,7 @@ main-build: $(OBJS) $(CMD_SRCS) $(GEN_CMDS)
 flower_ota_onchip_CC2340R5_RGE.out: $(OBJS) $(CMD_SRCS) $(GEN_CMDS)
 	@echo 'Building target: "$@"'
 	@echo 'Invoking: Arm Linker'
-	"C:/ti/ccs1281/ccs/tools/compiler/ti-cgt-armllvm_3.2.2.LTS/bin/tiarmclang.exe" -march=thumbv6m -mcpu=cortex-m0plus -mfloat-abi=soft -mlittle-endian -mthumb -Oz -flto -Dti_log_Log_ENABLE -DOTA_ONCHIP -DSYNC_WRITE -DZB_TI_F3_ZBOSS -DZB_CONFIGURABLE_MEM -DZB_ED_ROLE -DxDISABLE_TURBO_POLL -gdwarf-3 -Wno-gnu-folding-constant -Wno-unaligned-access -Wl,-m"flower_ota_onchip_CC2340R5_RGE.map" -Wl,-i"C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source" -Wl,-i"C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/common/cc26xx/flash_interface/" -Wl,-i"C:/Users/Sergey/workspace_v12/flower_ota_onchip_CC2340R5_RGE/Debug/syscfg" -Wl,-i"C:/ti/ccs1281/ccs/tools/compiler/ti-cgt-armllvm_3.2.2.LTS/lib" -Wl,--reread_libs -Wl,--define=OTA_ONCHIP -Wl,--diag_wrap=off -Wl,--display_error_number -Wl,--warn_sections -Wl,--xml_link_info="flower_ota_onchip_CC2340R5_RGE_linkInfo.xml" -Wl,--rom_model -o "flower_ota_onchip_CC2340R5_RGE.out" $(ORDERED_OBJS)
+	"C:/ti/ccs1281/ccs/tools/compiler/ti-cgt-armllvm_3.2.2.LTS/bin/tiarmclang.exe" -march=thumbv6m -mcpu=cortex-m0plus -mfloat-abi=soft -mlittle-endian -mthumb -Oz -flto -Dti_log_Log_ENABLE -DOTA_ONCHIP -DSYNC_WRITE -DZB_TI_F3_ZBOSS -DZB_CONFIGURABLE_MEM -DZB_ED_ROLE -DxDISABLE_TURBO_POLL -DBH1750 -DOPT3001 -DTMP102 -gdwarf-3 -Wno-gnu-folding-constant -Wno-unaligned-access -Wl,-m"flower_ota_onchip_CC2340R5_RGE.map" -Wl,-i"C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source" -Wl,-i"C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/common/cc26xx/flash_interface/" -Wl,-i"C:/Users/Sergey/workspace_v12/flower_ota_onchip_CC2340R5_RGE/Debug/syscfg" -Wl,-i"C:/ti/ccs1281/ccs/tools/compiler/ti-cgt-armllvm_3.2.2.LTS/lib" -Wl,--reread_libs -Wl,--define=OTA_ONCHIP -Wl,--diag_wrap=off -Wl,--display_error_number -Wl,--warn_sections -Wl,--xml_link_info="flower_ota_onchip_CC2340R5_RGE_linkInfo.xml" -Wl,--rom_model -o "flower_ota_onchip_CC2340R5_RGE.out" $(ORDERED_OBJS)
 	@echo 'Finished building target: "$@"'
 	@echo ' '
 	@$(MAKE) --no-print-directory post-build
@@ -164,8 +168,8 @@ flower_ota_onchip_CC2340R5_RGE.out: $(OBJS) $(CMD_SRCS) $(GEN_CMDS)
 # Other Targets
 clean:
 	-$(RM) $(GEN_MISC_FILES__QUOTED)$(GEN_FILES__QUOTED)$(EXE_OUTPUTS__QUOTED)
-	-$(RM) "flash_interface_internal.o" "on_off_switch_ota_client.o" "syscfg\ti_devices_config.o" "syscfg\ti_radio_config.o" "syscfg\ti_drivers_config.o" "syscfg\ti_log_config.o" "syscfg\ti_zigbee_config.o" "syscfg\ti_freertos_config.o" "syscfg\ti_freertos_portable_config.o" "ota_client_interface.o" "version.o" "osif\ti_f3_led_buttons.o" "osif\ti_f3_main.o" "osif\ti_f3_ota.o" 
-	-$(RM) "flash_interface_internal.d" "on_off_switch_ota_client.d" "syscfg\ti_devices_config.d" "syscfg\ti_radio_config.d" "syscfg\ti_drivers_config.d" "syscfg\ti_log_config.d" "syscfg\ti_zigbee_config.d" "syscfg\ti_freertos_config.d" "syscfg\ti_freertos_portable_config.d" "ota_client_interface.d" "version.d" "osif\ti_f3_led_buttons.d" "osif\ti_f3_main.d" "osif\ti_f3_ota.d" 
+	-$(RM) "bh1750.o" "bme280i2c.o" "flash_interface_internal.o" "on_off_switch_ota_client.o" "syscfg\ti_devices_config.o" "syscfg\ti_radio_config.o" "syscfg\ti_drivers_config.o" "syscfg\ti_log_config.o" "syscfg\ti_zigbee_config.o" "syscfg\ti_freertos_config.o" "syscfg\ti_freertos_portable_config.o" "opt3001.o" "ota_client_interface.o" "tmp102.o" "version.o" "osif\ti_f3_led_buttons.o" "osif\ti_f3_main.o" "osif\ti_f3_ota.o" 
+	-$(RM) "bh1750.d" "bme280i2c.d" "flash_interface_internal.d" "on_off_switch_ota_client.d" "syscfg\ti_devices_config.d" "syscfg\ti_radio_config.d" "syscfg\ti_drivers_config.d" "syscfg\ti_log_config.d" "syscfg\ti_zigbee_config.d" "syscfg\ti_freertos_config.d" "syscfg\ti_freertos_portable_config.d" "opt3001.d" "ota_client_interface.d" "tmp102.d" "version.d" "osif\ti_f3_led_buttons.d" "osif\ti_f3_main.d" "osif\ti_f3_ota.d" 
 	-$(RMDIR) $(GEN_MISC_DIRS__QUOTED)
 	-@echo 'Finished clean'
 	-@echo ' '
@@ -180,7 +184,7 @@ post-build:
 	-C:/ti/ccs1281/ccs/tools/compiler/ti-cgt-armllvm_3.2.2.LTS/bin/tiarmobjcopy -O binary C:/Users/Sergey/workspace_v12/flower_ota_onchip_CC2340R5_RGE/Debug/flower_ota_onchip_CC2340R5_RGE.out C:/Users/Sergey/workspace_v12/flower_ota_onchip_CC2340R5_RGE/Debug/flower_ota_onchip_CC2340R5_RGE.bin --remove-section=.ccfg
 	-C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/tools/common/mcuboot/imgtool sign --header-size 0x100 --align 4 --slot-size 0x0003D800 --version 1.0.0 --pad --pad-header --key C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/third_party/mcuboot/root-ec-p256.pem  C:/Users/Sergey/workspace_v12/flower_ota_onchip_CC2340R5_RGE/Debug/flower_ota_onchip_CC2340R5_RGE.bin C:/Users/Sergey/workspace_v12/flower_ota_onchip_CC2340R5_RGE/Debug/flower_ota_onchip_CC2340R5_RGE_ota.bin
 	-C:/ti/ccs1281/ccs/tools/compiler/ti-cgt-armllvm_3.2.2.LTS/bin/tiarmobjcopy -O ihex C:/Users/Sergey/workspace_v12/flower_ota_onchip_CC2340R5_RGE/Debug/flower_ota_onchip_CC2340R5_RGE.out C:/Users/Sergey/workspace_v12/flower_ota_onchip_CC2340R5_RGE/Debug/flower_ota_onchip_CC2340R5_RGE.hex
-	-C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/tools/zstack/zigbee_ota_image_converter/zOTAfileGen C:/Users/Sergey/workspace_v12/flower_ota_onchip_CC2340R5_RGE/Debug/flower_ota_onchip_CC2340R5_RGE_ota.bin C:/Users/Sergey/workspace_v12/flower_ota_onchip_CC2340R5_RGE/Debug/    BEBE 2340 24000002
+	-C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/tools/zstack/zigbee_ota_image_converter/zOTAfileGen C:/Users/Sergey/workspace_v12/flower_ota_onchip_CC2340R5_RGE/Debug/flower_ota_onchip_CC2340R5_RGE_ota.bin C:/Users/Sergey/workspace_v12/flower_ota_onchip_CC2340R5_RGE/Debug/    BEBE 2340 24000003
 	-@echo ' '
 
 .PHONY: all clean dependents

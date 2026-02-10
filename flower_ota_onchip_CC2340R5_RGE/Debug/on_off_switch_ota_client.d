@@ -170,6 +170,7 @@ on_off_switch_ota_client.o: ../on_off_switch_ota_client.c \
  C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/drivers/gpio/GPIOLPF3.h \
  C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/devices/cc23x0r5/inc/hw_ioc.h \
  syscfg/ti_drivers_config.h \
+ C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/drivers/I2C.h \
  C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/drivers/BatteryMonitor.h \
  C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/drivers/PWM.h \
  C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/drivers/ADC.h \
@@ -178,6 +179,11 @@ on_off_switch_ota_client.o: ../on_off_switch_ota_client.c \
  C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/devices/cc23x0r5/inc/hw_adc.h \
  C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/devices/cc23x0r5/inc/hw_fcfg.h \
  C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/devices/cc23x0r5/inc/hw_sys0.h \
+ C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/drivers/i2c/I2CLPF3.h \
+ C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/drivers/dpl/SwiP.h \
+ C:/Users/Sergey/workspace_v12/flower_ota_onchip_CC2340R5_RGE/bh1750.h \
+ C:/Users/Sergey/workspace_v12/flower_ota_onchip_CC2340R5_RGE/opt3001.h \
+ C:/Users/Sergey/workspace_v12/flower_ota_onchip_CC2340R5_RGE/tmp102.h \
  C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/zigbee/include/zb_mem_config_lprf3.h \
  C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/zigbee/include/zb_src_matching.h \
  C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/third_party/zigbee/zboss_r23/include/zb_mem_config_common.h \
@@ -521,6 +527,8 @@ C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/devices/cc23x0r5/inc/hw_io
 
 syscfg/ti_drivers_config.h:
 
+C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/drivers/I2C.h:
+
 C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/drivers/BatteryMonitor.h:
 
 C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/drivers/PWM.h:
@@ -536,6 +544,16 @@ C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/devices/cc23x0r5/inc/hw_ad
 C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/devices/cc23x0r5/inc/hw_fcfg.h:
 
 C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/devices/cc23x0r5/inc/hw_sys0.h:
+
+C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/drivers/i2c/I2CLPF3.h:
+
+C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/drivers/dpl/SwiP.h:
+
+C:/Users/Sergey/workspace_v12/flower_ota_onchip_CC2340R5_RGE/bh1750.h:
+
+C:/Users/Sergey/workspace_v12/flower_ota_onchip_CC2340R5_RGE/opt3001.h:
+
+C:/Users/Sergey/workspace_v12/flower_ota_onchip_CC2340R5_RGE/tmp102.h:
 
 C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/zigbee/include/zb_mem_config_lprf3.h:
 

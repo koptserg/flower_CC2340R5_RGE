@@ -68,6 +68,19 @@
 #include <ti/drivers/ADC.h>
 #include <ti/drivers/adc/ADCLPF3.h>
 
+// Import I2C Driver definitions
+#include <ti/drivers/I2C.h>
+#include <ti/drivers/i2c/I2CLPF3.h>
+#ifdef BH1750
+#include <bh1750.h>
+#endif
+#ifdef OPT3001
+#include <opt3001.h>
+#endif
+#ifdef TMP102
+#include <tmp102.h>
+#endif
+
 // Define name for ADC channel index
 //#define THERMOCOUPLE_OUT  0
 
@@ -99,6 +112,23 @@ uint32_t   dutyValue;
 ADC_Handle adc;
 ADC_Params params;
 
+I2C_Handle i2cHandle;
+#if defined (BH1750) || defined (OPT3001)
+uint8_t illuminance_param;
+#endif
+#ifdef BH1750
+bool bh1750_detect;
+uint8_t BH1750_mode = ONE_TIME_HIGH_RES_MODE;
+#endif
+#ifdef OPT3001
+bool opt3001_detect;
+#endif
+#ifdef TMP102
+bool tmp102_detect;
+#endif
+
+bool press_buttom_update_attr = 0;
+
 /****** Application function declarations ******/
 zb_uint8_t zcl_specific_cluster_cmd_handler(zb_uint8_t param);
 void on_off_read_attr_resp_handler(zb_bufid_t cmd_buf);;
@@ -109,12 +139,32 @@ void device_interface_cb(zb_uint8_t param);
 void device_reset_after(zb_uint8_t param);
 void led_blink(zb_uint8_t count);
 void led_blink_cb(zb_uint8_t count, zb_uint8_t led_no);
-void update_attr_value(zb_bool_t send_attrib);
+void update_attr_value(zb_uint8_t param);
 zb_uint16_t soil_moisture(zb_uint8_t adcCount);
 void pwm_init_param(void);
 void timer_update(zb_uint8_t param);
 void adc_init_param(void);
 
+#if defined (BH1750) || defined (TMP102) || defined (OPT3001)
+static void zclSampleSw_I2cInit(void);
+static void zclSampleSw_I2cClose(void);
+#endif
+#if defined (BH1750) || defined (OPT3001)
+static void update_attr_illuminance_value(zb_uint8_t param);
+void send_illuminance(zb_uint8_t param);
+#endif
+#ifdef BH1750
+static void bh1750_start_measuremts(zb_uint8_t param);
+#endif
+#ifdef OPT3001
+static void opt3001_start_measuremts(zb_uint8_t param);
+#endif
+#ifdef TMP102
+static void tmp102_start_measuremts(zb_uint8_t param);
+static void update_attr_temperature_value(zb_uint8_t param);
+void send_temperature(zb_uint8_t param);
+#endif
+zb_uint16_t getVoltage(zb_uint8_t voltCount);
 static void configure_attribute_reporting(void);
 
 /****** Cluster declarations ******/
@@ -185,12 +235,27 @@ ZB_ZCL_DECLARE_SOIL_MOISTURE_MEASUREMENT_ATTRIB_LIST(soil_moisure_attr_list,
   &g_dev_ctx.soil_moisure_attr.min_value,
   &g_dev_ctx.soil_moisure_attr.max_value);
 
+/* ILLUMINANCE MEASUREMENT cluster attributes */
+ZB_ZCL_DECLARE_ILLUMINANCE_MEASUREMENT_ATTRIB_LIST(illuminance_attr_list,
+  &g_dev_ctx.illuminance_attr.value,
+  &g_dev_ctx.illuminance_attr.min_value,
+  &g_dev_ctx.illuminance_attr.max_value);
+
+/* Temperature Measurement cluster attributes */
+ZB_ZCL_DECLARE_TEMP_MEASUREMENT_ATTRIB_LIST(temperature_attr_list,
+  &g_dev_ctx.temperature_attr.value,
+  &g_dev_ctx.temperature_attr.min_value,
+  &g_dev_ctx.temperature_attr.max_value,
+  &g_dev_ctx.temperature_attr.tolerance);
+
 /* Declare cluster list for the device */
 ZB_HA_DECLARE_ON_OFF_SWITCH_1_CLUSTER_LIST(on_off_switch_clusters_1,
                                                      on_off_switch_config_attr_list,
                                                      basic_attr_list,
                                                      identify_attr_list,
                                                      battery_attr_list,
+                                                     illuminance_attr_list,
+                                                     temperature_attr_list,
                                                      soil_moisure_attr_list
                                                      );
 ZB_HA_DECLARE_ON_OFF_SWITCH_2_CLUSTER_LIST(on_off_switch_clusters_2,
@@ -202,8 +267,6 @@ ZB_HA_DECLARE_ON_OFF_SWITCH_1_EP(on_off_switch_ep_1, ZB_SWITCH_ENDPOINT, on_off_
 ZB_HA_DECLARE_ON_OFF_SWITCH_2_EP(on_off_switch_ep_2, ZB_OTA_ENDPOINT, on_off_switch_clusters_2);
 /* Declare application's device context for 3 endpoint */
 ZBOSS_DECLARE_DEVICE_CTX_2_EP(on_off_switch_ctx, on_off_switch_ep_1, on_off_switch_ep_2);
-//ZBOSS_DEVICE_DECLARE_REPORTING_CTX(rep_ctx, rep_count);
-
 
 void my_main_loop()
 {
@@ -239,13 +302,24 @@ MAIN()
   ZB_ZCL_SET_STRING_VAL(g_dev_ctx.basic_attr.mf_name, "DIYRuZ", 6);
   ZB_ZCL_SET_STRING_VAL(g_dev_ctx.basic_attr.model_id, "DIYRuZ_FW2340R5", 15);
 
+  g_dev_ctx.battery_attr.remaining = ZB_ZCL_POWER_CONFIG_BATTERY_REMAINING_UNKNOWN;
+
   g_dev_ctx.soil_moisure_attr.value = ZB_ZCL_SOIL_MOISTURE_MEASUREMENT_VALUE_DEFAULT_VALUE;
   g_dev_ctx.soil_moisure_attr.min_value = ZB_ZCL_SOIL_MOISTURE_MEASUREMENT_MIN_VALUE_DEFAULT_VALUE;
   g_dev_ctx.soil_moisure_attr.max_value = ZB_ZCL_SOIL_MOISTURE_MEASUREMENT_MAX_VALUE_DEFAULT_VALUE;
 
+  g_dev_ctx.illuminance_attr.value = ZB_ZCL_ATTR_ILLUMINANCE_MEASUREMENT_MEASURED_VALUE_DEFAULT;
+  g_dev_ctx.illuminance_attr.min_value = ZB_ZCL_ATTR_ILLUMINANCE_MEASUREMENT_MIN_MEASURED_VALUE_UNDEFINED;
+  g_dev_ctx.illuminance_attr.max_value = ZB_ZCL_ATTR_ILLUMINANCE_MEASUREMENT_MAX_MEASURED_VALUE_UNDEFINED;
+
+  g_dev_ctx.temperature_attr.value = ZB_ZCL_TEMP_MEASUREMENT_VALUE_DEFAULT_VALUE;
+  g_dev_ctx.temperature_attr.min_value = ZB_ZCL_TEMP_MEASUREMENT_MIN_VALUE_DEFAULT_VALUE;
+  g_dev_ctx.temperature_attr.max_value = ZB_ZCL_TEMP_MEASUREMENT_MAX_VALUE_DEFAULT_VALUE;
+  g_dev_ctx.temperature_attr.tolerance = ZB_ZCL_TEMP_MEASUREMENT_VALUE_DEFAULT_VALUE;
+
   g_dev_ctx.ota_attr.manufacturer = 0xBEBE;
   g_dev_ctx.ota_attr.image_type = 0x2340;
-  g_dev_ctx.ota_attr.file_version = 0x24000002;
+  g_dev_ctx.ota_attr.file_version = 0x24000003;
 
   /* Global ZBOSS initialization */
   ZB_INIT("on_off_switch");
@@ -315,26 +389,238 @@ MAIN()
     pwm_init_param();
     adc_init_param();
 
-//    timer_update(0);
+#if defined (BH1750) || defined (TMP102) || defined (OPT3001)
+    // One-time init of I2C driver
+    I2C_init();
+    zclSampleSw_I2cInit();
+#endif
+#ifdef BH1750
+    bh1750_detect = bh1750_init(BH1750_mode);
+#endif
+#ifdef OPT3001
+    config.conversion_time = OPT3001_800MS;
+    config.mode = SINGLE_SHOT;
+    config.range = OPT3001_RANGE_AUTO;
+    opt3001_detect = OPT3001_begin(0x44);
+#endif
+#ifdef TMP102
+    tmp102_detect = tmp102_begin(TMP102_I2CADDR);
+#endif
+#if defined (BH1750) || defined (TMP102) || defined (OPT3001)
+    zclSampleSw_I2cClose();
+#endif
 
     GPIO_setConfig(CONFIG_GPIO_BTN1, GPIO_CFG_IN_PU);
-/*
-//    GPIO_setConfig(CONFIG_GPIO_BTN2, GPIO_CFG_IN_PU);
-    // if either button 1 or button 2 gets pressed
-    zb_bool_t sideButtonPressed = ((GPIO_read((zb_uint8_t)CONFIG_GPIO_BTN1) == 0U) || (GPIO_read((zb_uint8_t)CONFIG_GPIO_BTN2) == 0U));
-    // then perform a factory reset
-    if (sideButtonPressed)
-    {
-      perform_factory_reset = ZB_TRUE;
-      Log_printf(LogModule_Zigbee_App, Log_INFO, "perform factory reset");
-    }
-*/
+
     /* Call the application-specific main loop */
     my_main_loop();
   }
 
   MAIN_RETURN(0);
 }
+
+#if defined (BH1750) || defined (TMP102) || defined (OPT3001)
+static void zclSampleSw_I2cInit(void) {
+  // initialize optional I2C bus parameters
+  I2C_Params params;
+  I2C_Params_init(&params);
+  // Open I2C bus for usage
+  i2cHandle = I2C_open(CONFIG_I2C_0, &params);
+  if (i2cHandle == NULL) {
+    // Error opening I2C
+    while(1);
+  }
+}
+
+static void zclSampleSw_I2cClose(void) {
+    I2C_close(i2cHandle);
+}
+#endif
+
+#ifdef TMP102
+static void tmp102_start_measuremts(zb_uint8_t param)
+{
+    Log_printf(LogModule_Zigbee_App, Log_INFO, "tmp102_start_measuremts %d", param);
+    zclSampleSw_I2cInit();
+
+    tmp102_oneShot(1); // Set One-Shot bit
+
+    ZB_SCHEDULE_APP_ALARM(update_attr_temperature_value, param, ZB_MILLISECONDS_TO_BEACON_INTERVAL(30));
+
+    zclSampleSw_I2cClose();
+}
+
+static void update_attr_temperature_value(zb_uint8_t param)
+{
+    zclSampleSw_I2cInit();
+
+    uint16_t zclTemperature = ZB_ZCL_TEMP_MEASUREMENT_VALUE_DEFAULT_VALUE;
+    if (press_buttom_update_attr == 0)
+    {
+      zclTemperature = (uint16_t)(tmp102_readTempC()*100);
+    }
+    Log_printf(LogModule_Zigbee_App, Log_INFO, "update_attr_temperature_value zclTemperature %d", zclTemperature);
+    tmp102_sleep();
+    zclSampleSw_I2cClose();
+
+    zb_zcl_status_t zcl_status;
+    zcl_status = zb_zcl_set_attr_val(ZB_SWITCH_ENDPOINT,
+                                     ZB_ZCL_CLUSTER_ID_TEMP_MEASUREMENT,
+                                     ZB_ZCL_CLUSTER_SERVER_ROLE,
+                                     ZB_ZCL_ATTR_TEMP_MEASUREMENT_VALUE_ID,
+                                     (zb_uint8_t *)&zclTemperature,
+                                     ZB_FALSE);
+    if(zcl_status != ZB_ZCL_STATUS_SUCCESS)
+    {
+            Log_printf(LogModule_Zigbee_App, Log_INFO, "update_attr_illuminance_value Set zclIlluminance value fail. zcl_status: %d", zcl_status);
+    }
+    if (param == 0)
+    {
+      ZB_SCHEDULE_APP_ALARM(send_temperature, param, ZB_MILLISECONDS_TO_BEACON_INTERVAL(100));
+    }
+}
+
+void send_temperature(zb_uint8_t param)
+{
+        zb_zcl_reporting_info_t cmd = {
+            .ep = ZB_SWITCH_ENDPOINT,
+            .cluster_id = ZB_ZCL_CLUSTER_ID_TEMP_MEASUREMENT,
+            .cluster_role = ZB_ZCL_CLUSTER_SERVER_ROLE,
+            .attr_id = ZB_ZCL_ATTR_TEMP_MEASUREMENT_VALUE_ID,
+            .dst.short_addr = 0x0000,
+            .dst.endpoint = ZB_SWITCH_ENDPOINT,
+            .dst.profile_id = ZB_AF_HA_PROFILE_ID,
+            .manuf_code = ZB_ZCL_MANUFACTURER_WILDCARD_ID,
+        };
+        if (ZCL_CTX().reporting_ctx.buf_ref != ZB_UNDEFINED_BUFFER)
+          {
+            Log_printf(LogModule_Zigbee_App, Log_INFO,  "buffer is free, send report");
+            zb_zcl_send_report_attr_command(&cmd, ZCL_CTX().reporting_ctx.buf_ref);
+            ZCL_CTX().reporting_ctx.buf_ref = ZB_UNDEFINED_BUFFER;
+          }
+        else
+          {
+            // Report buffer is in use. Retry sending on cb
+            Log_printf(LogModule_Zigbee_App, Log_INFO,  "buffer is in use, skip");
+          }
+}
+#endif
+
+#ifdef OPT3001
+static void opt3001_start_measuremts(zb_uint8_t param)
+{
+    illuminance_param = param;
+//    Log_printf(LogModule_Zigbee_App, Log_INFO, "opt3001_start_measuremts %d", param);
+    zclSampleSw_I2cInit();
+
+    config.mode =  CONTINUOUS;
+    OPT3001_apply_config();
+
+    if (config.conversion_time == OPT3001_100MS)
+    {
+//        Log_printf(LogModule_Zigbee_App, Log_INFO, "OPT3001_100MS");
+      ZB_SCHEDULE_APP_ALARM(update_attr_illuminance_value, param, ZB_MILLISECONDS_TO_BEACON_INTERVAL(100));
+    }
+    if (config.conversion_time == OPT3001_800MS)
+    {
+//        Log_printf(LogModule_Zigbee_App, Log_INFO, "OPT3001_800MS");
+      ZB_SCHEDULE_APP_ALARM(update_attr_illuminance_value, param, ZB_MILLISECONDS_TO_BEACON_INTERVAL(800));
+    }
+
+    zclSampleSw_I2cClose();
+}
+#endif
+
+#ifdef BH1750
+static void bh1750_start_measuremts(zb_uint8_t param)
+{
+    illuminance_param = param;
+//    Log_printf(LogModule_Zigbee_App, Log_INFO, "bh1750_start_measuremts %d", param);
+    zclSampleSw_I2cInit();
+
+    bh1750_Write(BH1750_POWER_ON);
+    bh1750_Write(BH1750_mode);
+
+    if (BH1750_mode == CONTINUOUS_LOW_RES_MODE || BH1750_mode == ONE_TIME_LOW_RES_MODE) {
+      ZB_SCHEDULE_APP_ALARM(update_attr_illuminance_value, param, ZB_MILLISECONDS_TO_BEACON_INTERVAL(30));
+    } else {
+      ZB_SCHEDULE_APP_ALARM(update_attr_illuminance_value, param, ZB_MILLISECONDS_TO_BEACON_INTERVAL(180));
+    }
+
+    zclSampleSw_I2cClose();
+}
+#endif
+
+#if defined (BH1750) || defined (OPT3001)
+static void update_attr_illuminance_value(zb_uint8_t param)
+{
+    zclSampleSw_I2cInit();
+
+    zb_uint16_t zclIlluminance = ZB_ZCL_ATTR_ILLUMINANCE_MEASUREMENT_MEASURED_VALUE_DEFAULT;
+    if (press_buttom_update_attr == 0)
+    {
+#ifdef BH1750
+      if (param == illuminance_param && bh1750_detect == true)
+      {
+        zclIlluminance = (uint16_t)(bh1750_Read());
+        Log_printf(LogModule_Zigbee_App, Log_INFO, "update_bh1750_attr_illuminance_value zclIlluminance %d", zclIlluminance);
+      bh1750_PowerDown();
+      }
+#endif
+#ifdef OPT3001
+      if (param == illuminance_param && opt3001_detect == true)
+      {
+        uint32_t raw_illuminance = OPT3001_get_illuminance();
+        zclIlluminance = (uint16_t)(raw_illuminance);
+        Log_printf(LogModule_Zigbee_App, Log_INFO, "update_opt3001_attr_illuminance_value zclIlluminance %d", zclIlluminance);
+      }
+#endif
+    }
+
+    zb_zcl_status_t zcl_status;
+    zcl_status = zb_zcl_set_attr_val(ZB_SWITCH_ENDPOINT,
+                                     ZB_ZCL_CLUSTER_ID_ILLUMINANCE_MEASUREMENT,
+                                     ZB_ZCL_CLUSTER_SERVER_ROLE,
+                                     ZB_ZCL_ATTR_ILLUMINANCE_MEASUREMENT_MEASURED_VALUE_ID,
+                                     (zb_uint8_t *)&zclIlluminance,
+                                     ZB_FALSE);
+    if(zcl_status != ZB_ZCL_STATUS_SUCCESS)
+    {
+            Log_printf(LogModule_Zigbee_App, Log_INFO, "update_attr_illuminance_value Set zclIlluminance value fail. zcl_status: %d", zcl_status);
+    }
+
+    zclSampleSw_I2cClose();
+    if (param == 0)
+    {
+      ZB_SCHEDULE_APP_ALARM(send_illuminance, param, ZB_MILLISECONDS_TO_BEACON_INTERVAL(100));
+    }
+}
+
+void send_illuminance(zb_uint8_t param)
+{
+        zb_zcl_reporting_info_t cmd = {
+            .ep = ZB_SWITCH_ENDPOINT,
+            .cluster_id = ZB_ZCL_CLUSTER_ID_ILLUMINANCE_MEASUREMENT,
+            .cluster_role = ZB_ZCL_CLUSTER_SERVER_ROLE,
+            .attr_id = ZB_ZCL_ATTR_ILLUMINANCE_MEASUREMENT_MEASURED_VALUE_ID,
+            .dst.short_addr = 0x0000,
+            .dst.endpoint = ZB_SWITCH_ENDPOINT,
+            .dst.profile_id = ZB_AF_HA_PROFILE_ID,
+            .manuf_code = ZB_ZCL_MANUFACTURER_WILDCARD_ID,
+        };
+        if (ZCL_CTX().reporting_ctx.buf_ref != ZB_UNDEFINED_BUFFER)
+          {
+            Log_printf(LogModule_Zigbee_App, Log_INFO,  "buffer is free, send report");
+            zb_zcl_send_report_attr_command(&cmd, ZCL_CTX().reporting_ctx.buf_ref);
+            ZCL_CTX().reporting_ctx.buf_ref = ZB_UNDEFINED_BUFFER;
+          }
+        else
+          {
+            // Report buffer is in use. Retry sending on cb
+            Log_printf(LogModule_Zigbee_App, Log_INFO,  "buffer is in use, skip");
+          }
+}
+#endif
 
 void pwm_init_param(void)
 {
@@ -353,9 +639,6 @@ void pwm_init_param(void)
         // PWM_open() failed
         while (1);
     }
-//    PWM_start(pwm);                          // start PWM with 0% duty cycle
-//    dutyValue = (uint32_t) (((uint64_t) PWM_DUTY_FRACTION_MAX * 50) / 100);
-//    PWM_setDuty(pwm, dutyValue);  // set duty cycle to 50%
 }
 
 void adc_init_param(void)
@@ -481,8 +764,25 @@ void led_blink(zb_uint8_t count)
 
 void timer_update(zb_uint8_t param)
 {
-      update_attr_value(false);
-//      ZB_SCHEDULE_APP_ALARM(timer_update, param, ZB_TIME_ONE_SECOND *600); // 10 minute
+#ifdef BH1750
+    if(bh1750_detect == 1)
+    {
+      bh1750_start_measuremts(3);
+    }
+#endif
+#ifdef OPT3001
+    if(opt3001_detect == 1)
+    {
+      opt3001_start_measuremts(3);
+    }
+#endif
+#ifdef TMP102
+      if(tmp102_detect == 1)
+      {
+        tmp102_start_measuremts(4);
+      }
+#endif
+      update_attr_value(1);
       ZB_SCHEDULE_APP_ALARM(timer_update, param, ZB_TIME_ONE_SECOND *10); // 10 sec
 }
 
@@ -495,7 +795,6 @@ long map(long x, long in_min, long in_max, long out_min, long out_max)
 //---------------------------------------------------------------------------------------------
 // configure attribute reporting
 //
-
 #define RPT_MIN 10
 #define RPT_MAX 1800
 
@@ -516,7 +815,7 @@ static void configure_attribute_reporting(void){
     reporting_info.manuf_code = ZB_ZCL_MANUFACTURER_WILDCARD_ID,
     reporting_info.u.send_info.min_interval = RPT_MIN;
     reporting_info.u.send_info.max_interval = RPT_MAX;
-    reporting_info.u.send_info.delta.u8 = 2;
+    reporting_info.u.send_info.delta.u8 = 10;
     reporting_info.u.send_info.reported_value.u8 = 0;
     reporting_info.u.send_info.def_min_interval = RPT_MIN;
     reporting_info.u.send_info.def_max_interval = RPT_MAX;
@@ -539,7 +838,7 @@ static void configure_attribute_reporting(void){
     reporting_info.manuf_code = ZB_ZCL_MANUFACTURER_WILDCARD_ID,
     reporting_info.u.send_info.min_interval = RPT_MIN;
     reporting_info.u.send_info.max_interval = RPT_MAX;
-    reporting_info.u.send_info.delta.u16 = 100;
+    reporting_info.u.send_info.delta.u16 = 300;
     reporting_info.u.send_info.reported_value.u16 = 0x0000;
     reporting_info.u.send_info.def_min_interval = RPT_MIN;
     reporting_info.u.send_info.def_max_interval = RPT_MAX;
@@ -548,6 +847,52 @@ static void configure_attribute_reporting(void){
         Log_printf(LogModule_Zigbee_App, Log_INFO, "Soil moisture reporting configured successfully");
     } else {
         Log_printf(LogModule_Zigbee_App, Log_INFO, "Failed to configure Soil moisture reporting: %d", status);
+    }
+
+    memset(&reporting_info, 0, sizeof(reporting_info));
+    reporting_info.direction = ZB_ZCL_CONFIGURE_REPORTING_SEND_REPORT;
+    reporting_info.ep = ZB_SWITCH_ENDPOINT;
+    reporting_info.cluster_id = ZB_ZCL_CLUSTER_ID_ILLUMINANCE_MEASUREMENT;
+    reporting_info.cluster_role = ZB_ZCL_CLUSTER_SERVER_ROLE;
+    reporting_info.attr_id = ZB_ZCL_ATTR_ILLUMINANCE_MEASUREMENT_MEASURED_VALUE_ID;
+    reporting_info.dst.short_addr = 0x0000;
+    reporting_info.dst.endpoint = 1;
+    reporting_info.dst.profile_id = ZB_AF_HA_PROFILE_ID;
+    reporting_info.manuf_code = ZB_ZCL_MANUFACTURER_WILDCARD_ID,
+    reporting_info.u.send_info.min_interval = RPT_MIN;
+    reporting_info.u.send_info.max_interval = RPT_MAX;
+    reporting_info.u.send_info.delta.u16 = 2;
+    reporting_info.u.send_info.reported_value.u16 = 0x0000;
+    reporting_info.u.send_info.def_min_interval = RPT_MIN;
+    reporting_info.u.send_info.def_max_interval = RPT_MAX;
+    status = zb_zcl_put_reporting_info(&reporting_info, ZB_TRUE);
+    if (status == RET_OK) {
+        Log_printf(LogModule_Zigbee_App, Log_INFO, "Illuminance reporting configured successfully");
+    } else {
+        Log_printf(LogModule_Zigbee_App, Log_INFO, "Failed to configure Illuminance reporting: %d", status);
+    }
+
+    memset(&reporting_info, 0, sizeof(reporting_info));
+    reporting_info.direction = ZB_ZCL_CONFIGURE_REPORTING_SEND_REPORT;
+    reporting_info.ep = ZB_SWITCH_ENDPOINT;
+    reporting_info.cluster_id = ZB_ZCL_CLUSTER_ID_TEMP_MEASUREMENT;
+    reporting_info.cluster_role = ZB_ZCL_CLUSTER_SERVER_ROLE;
+    reporting_info.attr_id = ZB_ZCL_ATTR_TEMP_MEASUREMENT_VALUE_ID;
+    reporting_info.dst.short_addr = 0x0000;
+    reporting_info.dst.endpoint = 1;
+    reporting_info.dst.profile_id = ZB_AF_HA_PROFILE_ID;
+    reporting_info.manuf_code = ZB_ZCL_MANUFACTURER_WILDCARD_ID,
+    reporting_info.u.send_info.min_interval = RPT_MIN;
+    reporting_info.u.send_info.max_interval = RPT_MAX;
+    reporting_info.u.send_info.delta.u16 = 10;
+    reporting_info.u.send_info.reported_value.u16 = 0x0000;
+    reporting_info.u.send_info.def_min_interval = RPT_MIN;
+    reporting_info.u.send_info.def_max_interval = RPT_MAX;
+    status = zb_zcl_put_reporting_info(&reporting_info, ZB_TRUE);
+    if (status == RET_OK) {
+        Log_printf(LogModule_Zigbee_App, Log_INFO, "Temperature reporting configured successfully");
+    } else {
+        Log_printf(LogModule_Zigbee_App, Log_INFO, "Failed to configure Temperature reporting: %d", status);
     }
 
 }
@@ -645,16 +990,52 @@ zb_uint8_t getBatteryRemainingPercentageZCLCR2032(zb_uint16_t volt16) {
     return (zb_uint8_t)(battery_level * 2);
 }
 
-void update_attr_value(zb_bool_t send_attrib)
+zb_uint8_t getBatteryRemainingPercentageZCL(zb_uint16_t volt16) {
+    zb_uint16_t battery_level;
+    if (volt16 >= 3000) {
+        battery_level = 100;
+    } else {
+        battery_level = map(volt16, 2000, 3000, 0, 100);
+    }
+    return (zb_uint8_t)(battery_level * 2);
+}
+
+zb_uint16_t getVoltage(zb_uint8_t voltCount)
 {
-    zb_uint16_t currentVoltage = BatteryMonitor_getVoltage() + BATTERY_MONITOR_COMPENSATION;
+    uint32_t currentVoltage = 0;
+    uint16_t average_currentVoltage = 0;
+    for (uint8_t i=0; i<voltCount; i++)
+    {
+        currentVoltage += BatteryMonitor_getVoltage();
+    }
+    average_currentVoltage = (uint16_t)(currentVoltage/voltCount);
+    Log_printf(LogModule_Zigbee_App, Log_INFO, "average_currentVoltage %d", average_currentVoltage);
+
+    return average_currentVoltage;
+}
+
+void update_attr_value(zb_uint8_t param)
+{
+//    zb_uint16_t currentVoltage = BatteryMonitor_getVoltage() + BATTERY_MONITOR_COMPENSATION;
+    zb_uint16_t currentVoltage = getVoltage(10) + BATTERY_MONITOR_COMPENSATION;
     zb_uint8_t zclVoltage = currentVoltage/100;
 //    zb_uint8_t batteryPercentage = map(currentVoltage, 2000, 3300, 0, 100);
 //    zb_uint8_t zclPercentage = batteryPercentage*2;
-    zb_uint8_t zclPercentage = getBatteryRemainingPercentageZCLCR2032(currentVoltage);
+//    zb_uint8_t zclPercentage = getBatteryRemainingPercentageZCLCR2032(currentVoltage);
+
+    zb_uint8_t zclPercentage = ZB_ZCL_POWER_CONFIG_BATTERY_REMAINING_UNKNOWN;
+    if (press_buttom_update_attr == 0)
+    {
+      zclPercentage = getBatteryRemainingPercentageZCL(currentVoltage);
+    }
     Log_printf(LogModule_Zigbee_App, Log_INFO, "update_attr_value currentVoltage %d zclVoltage %d zclPercentage %d",
                currentVoltage, zclVoltage, zclPercentage);
-    zb_uint16_t zclSoilMoisture = soil_moisture(10)*100;
+
+    zb_uint16_t zclSoilMoisture = ZB_ZCL_SOIL_MOISTURE_MEASUREMENT_VALUE_DEFAULT_VALUE;
+    if (press_buttom_update_attr == 0)
+    {
+      zclSoilMoisture = soil_moisture(10)*100;
+    }
     Log_printf(LogModule_Zigbee_App, Log_INFO, "update_attr_value zclSoilMoisture %d", zclSoilMoisture);
     zb_zcl_status_t zcl_status;
     zcl_status = zb_zcl_set_attr_val(ZB_SWITCH_ENDPOINT,
@@ -667,6 +1048,7 @@ void update_attr_value(zb_bool_t send_attrib)
     {
             Log_printf(LogModule_Zigbee_App, Log_INFO, "update_attr_value Set zclSoilMoisture value fail. zcl_status: %d", zcl_status);
     }
+/*
     zcl_status = zb_zcl_set_attr_val(ZB_SWITCH_ENDPOINT,
                                      ZB_ZCL_CLUSTER_ID_POWER_CONFIG,
                                      ZB_ZCL_CLUSTER_SERVER_ROLE,
@@ -677,6 +1059,7 @@ void update_attr_value(zb_bool_t send_attrib)
     {
         Log_printf(LogModule_Zigbee_App, Log_INFO, "update_attr_value Set zclVoltage value fail. zcl_status: %d", zcl_status);
     }
+*/
     zcl_status = zb_zcl_set_attr_val(ZB_SWITCH_ENDPOINT,
                                      ZB_ZCL_CLUSTER_ID_POWER_CONFIG,
                                      ZB_ZCL_CLUSTER_SERVER_ROLE,
@@ -688,12 +1071,12 @@ void update_attr_value(zb_bool_t send_attrib)
         Log_printf(LogModule_Zigbee_App, Log_INFO, "update_attr_value Set zclPercentage value fail. zcl_status: %d", zcl_status);
     }
 
-    if(send_attrib)
+    if(param == 0)
     {
-//      ZB_SCHEDULE_APP_CALLBACK(send_voltage, 0);
-      ZB_SCHEDULE_APP_ALARM(send_percentage, 1, ZB_MILLISECONDS_TO_BEACON_INTERVAL(300));
-      ZB_SCHEDULE_APP_ALARM(send_soil_moisture, 2, ZB_MILLISECONDS_TO_BEACON_INTERVAL(600));
+      ZB_SCHEDULE_APP_ALARM(send_percentage, 1, ZB_MILLISECONDS_TO_BEACON_INTERVAL(600));
+      ZB_SCHEDULE_APP_ALARM(send_soil_moisture, 2, ZB_MILLISECONDS_TO_BEACON_INTERVAL(900));
     }
+
 }
 
 void off_network_attention(zb_uint8_t param)
@@ -726,7 +1109,8 @@ zb_uint16_t soil_moisture(zb_uint8_t adcCount)
     average_adcValueUv = adcValueUv/adcCount;
     Log_printf(LogModule_Zigbee_App, Log_INFO, "adcValueUv %d", average_adcValueUv);
 //    uint16_t soilMoisture = map(average_adcValueUv, 2430000, 1230000, 0, 100);
-    zb_uint16_t currentVoltage = BatteryMonitor_getVoltage() + BATTERY_MONITOR_COMPENSATION;
+//    zb_uint16_t currentVoltage = BatteryMonitor_getVoltage() + BATTERY_MONITOR_COMPENSATION;
+    zb_uint16_t currentVoltage = getVoltage(10) + BATTERY_MONITOR_COMPENSATION;
 //https://docs.google.com/spreadsheets/d/16dDWsCKdl5FPHnDMNISL_V-6fvgtwrPjKINCnCKr_yo/edit?gid=0#gid=0
     uint16_t soilMoisture = map(average_adcValueUv, AIR_COMPENSATION_FORMULA(currentVoltage), WATER_COMPENSATION_FORMULA(currentVoltage), 0, 100);
     Log_printf(LogModule_Zigbee_App, Log_INFO, "soilMoisture %d average_adcValueUv %d currentVoltage %d", soilMoisture, average_adcValueUv, currentVoltage);
@@ -745,13 +1129,13 @@ void button_press_handler(zb_uint8_t param)
   }
   else
   {
-      Log_printf(LogModule_Zigbee_App, Log_INFO, "button_press_handler %d button %d state %d", param, button_number, button_state);
+//      Log_printf(LogModule_Zigbee_App, Log_INFO, "button_press_handler %d button %d state %d", param, button_number, button_state);
       if (button_state)
       {
           timestamp = ZB_TIMER_GET();
       } else {
           current_time = ZB_TIMER_GET();
-          Log_printf(LogModule_Zigbee_App, Log_INFO, "button_press_handler %d time_hold %d", param, ZB_TIME_SUBTRACT(current_time, timestamp));
+//          Log_printf(LogModule_Zigbee_App, Log_INFO, "button_press_handler %d time_hold %d", param, ZB_TIME_SUBTRACT(current_time, timestamp));
           if (ZB_TIME_SUBTRACT(current_time, timestamp) > ZB_TIME_ONE_SECOND * 4)
           {
               if (ZB_JOINED() != ZB_TRUE)
@@ -778,15 +1162,42 @@ void button_press_handler(zb_uint8_t param)
 //                  zb_ret_t zb_err_code;
 //                  zb_err_code = zb_buf_get_out_delayed(send_toggle_req);
 
-                  Log_printf(LogModule_Zigbee_App, Log_INFO, "basic_attr_power_source %d", g_dev_ctx.basic_attr.power_source);
+//                  Log_printf(LogModule_Zigbee_App, Log_INFO, "basic_attr_power_source %d", g_dev_ctx.basic_attr.power_source);
 //                  led_number_blink = 0;
 //                  zb_uint8_t led_count_blink = 3;
 //                  led_blink(led_count_blink*2+1);
 
-                  update_attr_value(true);
-//                  configure_attribute_reporting();
+//                  press_buttom_update_attr = 1;
+//                  uint8_t status = ZB_SCHEDULE_APP_ALARM_CANCEL (timer_update, ZB_ALARM_ANY_PARAM );
+//                  Log_printf(LogModule_Zigbee_App, Log_INFO, "ZB_SCHEDULE_APP_ALARM_CANCEL status %d", status);
+//                  update_attr_value(1);
+//                  update_attr_temperature_value(4);
+//                  update_attr_illuminance_value(3);
+//                  press_buttom_update_attr = 0;
+//                  timer_update(0);
+
+#ifdef TMP102
+                  if(tmp102_detect == 1)
+                  {
+//                      ZB_SCHEDULE_APP_ALARM(send_temperature, 4, ZB_MILLISECONDS_TO_BEACON_INTERVAL(600));
+                  }
+#endif
+#ifdef BH1750
+                  if(bh1750_detect == 1)
+                  {
+//                      ZB_SCHEDULE_APP_ALARM(send_illuminance, 3, ZB_MILLISECONDS_TO_BEACON_INTERVAL(900));
+                  }
+#endif //BH1750
+                  ZB_SCHEDULE_APP_ALARM(send_soil_moisture, 2, ZB_MILLISECONDS_TO_BEACON_INTERVAL(10));
+                  ZB_SCHEDULE_APP_ALARM(send_percentage, 1, ZB_MILLISECONDS_TO_BEACON_INTERVAL(300));
               } else {
 //                  soil_moisture(10);
+#ifdef OPT3001
+                  opt3001_start_measuremts(12);
+#endif //OPT3001
+#ifdef BH1750
+                  bh1750_start_measuremts(11);
+#endif //BH1750
               }
           }
       }
@@ -901,9 +1312,10 @@ void zboss_signal_handler(zb_uint8_t param)
         device_type = zb_get_device_type();
         ZVUNUSED(device_type);
         Log_printf(LogModule_Zigbee_App, Log_INFO, "Device (%d) STARTED OK", device_type);
+        Log_printf(LogModule_Zigbee_App, Log_INFO, "ZB_JOINED status %d", ZB_JOINED());
 
         configure_attribute_reporting();
-        timer_update(0); //
+        timer_update(0);
 
 //        zb_zdo_pim_set_long_poll_interval(ED_POLL_RATE);
 

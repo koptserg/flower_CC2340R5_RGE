@@ -3,6 +3,9 @@
 syscfg/ti_zigbee_config.o: syscfg/ti_zigbee_config.c \
  syscfg/ti_drivers_config.h \
  C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/devices/DeviceFamily.h \
+ C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/drivers/I2C.h \
+ C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/drivers/dpl/HwiP.h \
+ C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/drivers/dpl/SemaphoreP.h \
  syscfg/ti_zigbee_config.h \
  C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/third_party/zigbee/zboss_r23/include/zboss_api.h \
  C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/third_party/zigbee/zboss_r23/include/zb_version.h \
@@ -23,7 +26,6 @@ syscfg/ti_zigbee_config.o: syscfg/ti_zigbee_config.c \
  C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/drivers/dpl/TimestampP.h \
  C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/zigbee/osif/include/zb_hal_crypto.h \
  C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/zigbee/osif/include/zb_hal_led_buttons.h \
- C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/drivers/dpl/SemaphoreP.h \
  C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/zigbee/include/mac_platform.h \
  C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/drivers/rcl/RCL.h \
  C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/drivers/rcl/LRF.h \
@@ -38,7 +40,6 @@ syscfg/ti_zigbee_config.o: syscfg/ti_zigbee_config.c \
  C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/drivers/Power.h \
  C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/drivers/utils/List.h \
  C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/drivers/power/PowerCC23X0.h \
- C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/drivers/dpl/HwiP.h \
  C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/drivers/dpl/ClockP.h \
  C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/devices/cc23x0r5/inc/hw_pmctl.h \
  C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/devices/cc23x0r5/inc/hw_clkctl.h \
@@ -203,6 +204,12 @@ syscfg/ti_drivers_config.h:
 
 C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/devices/DeviceFamily.h:
 
+C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/drivers/I2C.h:
+
+C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/drivers/dpl/HwiP.h:
+
+C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/drivers/dpl/SemaphoreP.h:
+
 syscfg/ti_zigbee_config.h:
 
 C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/third_party/zigbee/zboss_r23/include/zboss_api.h:
@@ -243,8 +250,6 @@ C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/zigbee/osif/include/zb_hal
 
 C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/zigbee/osif/include/zb_hal_led_buttons.h:
 
-C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/drivers/dpl/SemaphoreP.h:
-
 C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/zigbee/include/mac_platform.h:
 
 C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/drivers/rcl/RCL.h:
@@ -272,8 +277,6 @@ C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/drivers/Power.h:
 C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/drivers/utils/List.h:
 
 C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/drivers/power/PowerCC23X0.h:
-
-C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/drivers/dpl/HwiP.h:
 
 C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/ti/drivers/dpl/ClockP.h:
 

@@ -85,6 +85,14 @@ extern const uint_least8_t CONFIG_GPIO_RLED_CONST;
 extern const uint_least8_t CONFIG_GPIO_BTN1_CONST;
 #define CONFIG_GPIO_BTN1 20
 
+/* Owned by CONFIG_I2C_0 as  */
+extern const uint_least8_t CONFIG_GPIO_I2C_0_SDA_CONST;
+#define CONFIG_GPIO_I2C_0_SDA 8
+
+/* Owned by CONFIG_I2C_0 as  */
+extern const uint_least8_t CONFIG_GPIO_I2C_0_SCL_CONST;
+#define CONFIG_GPIO_I2C_0_SCL 6
+
 /* Owned by CONFIG_LGPTIMER_0 as  */
 extern const uint_least8_t CONFIG_GPIO_LGPTIMER_0_CH0_CONST;
 #define CONFIG_GPIO_LGPTIMER_0_CH0 24
@@ -99,6 +107,30 @@ extern const uint_least8_t GPIO_pinUpperBound;
 
 #define CONFIG_LED_ON  (CONFIG_GPIO_LED_ON)
 #define CONFIG_LED_OFF (CONFIG_GPIO_LED_OFF)
+
+
+/*
+ *  ======== I2C ========
+ */
+
+/*
+ *  SCL: DIO_A1_AR+
+ *  SDA: DIO
+ */
+extern const uint_least8_t              CONFIG_I2C_0_CONST;
+#define CONFIG_I2C_0                    0
+#define CONFIG_TI_DRIVERS_I2C_COUNT     1
+
+/* ======== I2C Addresses and Speeds ======== */
+#include <ti/drivers/I2C.h>
+
+/* ---- CONFIG_I2C_0 I2C bus components ---- */
+
+/* no components connected to CONFIG_I2C_0 */
+
+/* max speed unspecified, defaulting to 100 kbps */
+#define CONFIG_I2C_0_MAXSPEED   (100U) /* kbps */
+#define CONFIG_I2C_0_MAXBITRATE ((I2C_BitRate)I2C_100kHz)
 
 
 /*

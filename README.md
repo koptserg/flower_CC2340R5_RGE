@@ -1,5 +1,5 @@
 # flower_CC2340R5_RGE
-![](/images/photo_2025-10-31_19-16-54.jpg)
+![](/images/photo_2026-01-30_19-05-15.jpg)
 ![](/images/2025-10-31_203427.png)
 ### Аппаратные средства
 1. Flower_CC2340R5_RGE
@@ -7,7 +7,7 @@
 
 ![](/images/photo_2025-10-31_19-38-26.jpg)
 ![](/images/photo_2025-10-31_19-39-06.jpg)
-Проект [OSHWLab](https://oshwlab.com/koptserg/zigbee_cc2340_cr2032)
+Проект [V1 OSHWLab](https://oshwlab.com/koptserg/zigbee_cc2340_cr2032), [V2 OSHWLab](https://oshwlab.com/koptserg/zigbee_cc2340_cr2032_copy), [V3 OSHWLab](https://oshwlab.com/koptserg/zigbee_cc2340_cr2032_copy_copy)
 
 ![](/images/2025-10-31_194809.png)
 ## Управление устройством

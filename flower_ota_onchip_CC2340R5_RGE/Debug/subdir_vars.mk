@@ -13,7 +13,6 @@ SYSCFG_SRCS += \
 
 C_SRCS += \
 ../bh1750.c \
-../bme280i2c.c \
 ../flash_interface_internal.c \
 ../on_off_switch_ota_client.c \
 ./syscfg/ti_devices_config.c \
@@ -43,7 +42,6 @@ GEN_MISC_DIRS += \
 
 C_DEPS += \
 ./bh1750.d \
-./bme280i2c.d \
 ./flash_interface_internal.d \
 ./on_off_switch_ota_client.d \
 ./syscfg/ti_devices_config.d \
@@ -63,7 +61,6 @@ GEN_OPTS += \
 
 OBJS += \
 ./bh1750.o \
-./bme280i2c.o \
 ./flash_interface_internal.o \
 ./on_off_switch_ota_client.o \
 ./syscfg/ti_devices_config.o \
@@ -94,7 +91,6 @@ GEN_MISC_DIRS__QUOTED += \
 
 OBJS__QUOTED += \
 "bh1750.o" \
-"bme280i2c.o" \
 "flash_interface_internal.o" \
 "on_off_switch_ota_client.o" \
 "syscfg\ti_devices_config.o" \
@@ -122,7 +118,6 @@ GEN_MISC_FILES__QUOTED += \
 
 C_DEPS__QUOTED += \
 "bh1750.d" \
-"bme280i2c.d" \
 "flash_interface_internal.d" \
 "on_off_switch_ota_client.d" \
 "syscfg\ti_devices_config.d" \
@@ -149,7 +144,6 @@ GEN_FILES__QUOTED += \
 
 C_SRCS__QUOTED += \
 "../bh1750.c" \
-"../bme280i2c.c" \
 "../flash_interface_internal.c" \
 "../on_off_switch_ota_client.c" \
 "./syscfg/ti_devices_config.c" \

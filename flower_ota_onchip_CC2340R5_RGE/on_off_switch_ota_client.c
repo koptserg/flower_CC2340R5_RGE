@@ -140,7 +140,8 @@ void device_reset_after(zb_uint8_t param);
 void led_blink(zb_uint8_t count);
 void led_blink_cb(zb_uint8_t count, zb_uint8_t led_no);
 void update_attr_value(zb_uint8_t param);
-zb_uint16_t soil_moisture(zb_uint8_t adcCount);
+//zb_uint16_t soil_moisture(zb_uint8_t adcCount);
+zb_uint16_t soil_moisture(zb_uint8_t adcCount, zb_uint16_t cachedVoltage);
 void pwm_init_param(void);
 void timer_update(zb_uint8_t param);
 void adc_init_param(void);
@@ -153,6 +154,7 @@ static void zclSampleSw_I2cClose(void);
 static void update_attr_illuminance_value(zb_uint8_t param);
 void send_illuminance(zb_uint8_t param);
 #endif
+static void send_report(zb_uint16_t cluster_id, zb_uint16_t attr_id);
 #ifdef BH1750
 static void bh1750_start_measuremts(zb_uint8_t param);
 #endif
@@ -319,7 +321,7 @@ MAIN()
 
   g_dev_ctx.ota_attr.manufacturer = 0xBEBE;
   g_dev_ctx.ota_attr.image_type = 0x2340;
-  g_dev_ctx.ota_attr.file_version = 0x24000003;
+  g_dev_ctx.ota_attr.file_version = 0x24000004;
 
   /* Global ZBOSS initialization */
   ZB_INIT("on_off_switch");
@@ -428,7 +430,9 @@ static void zclSampleSw_I2cInit(void) {
   i2cHandle = I2C_open(CONFIG_I2C_0, &params);
   if (i2cHandle == NULL) {
     // Error opening I2C
-    while(1);
+//    while(1);
+      Log_printf(LogModule_Zigbee_App, Log_ERROR, "I2C open failed");
+      zb_reset(0);
   }
 }
 
@@ -482,6 +486,7 @@ static void update_attr_temperature_value(zb_uint8_t param)
 
 void send_temperature(zb_uint8_t param)
 {
+/*
         zb_zcl_reporting_info_t cmd = {
             .ep = ZB_SWITCH_ENDPOINT,
             .cluster_id = ZB_ZCL_CLUSTER_ID_TEMP_MEASUREMENT,
@@ -503,6 +508,8 @@ void send_temperature(zb_uint8_t param)
             // Report buffer is in use. Retry sending on cb
             Log_printf(LogModule_Zigbee_App, Log_INFO,  "buffer is in use, skip");
           }
+*/
+        send_report(ZB_ZCL_CLUSTER_ID_TEMP_MEASUREMENT, ZB_ZCL_ATTR_TEMP_MEASUREMENT_VALUE_ID);
 }
 #endif
 
@@ -598,6 +605,7 @@ static void update_attr_illuminance_value(zb_uint8_t param)
 
 void send_illuminance(zb_uint8_t param)
 {
+/*
         zb_zcl_reporting_info_t cmd = {
             .ep = ZB_SWITCH_ENDPOINT,
             .cluster_id = ZB_ZCL_CLUSTER_ID_ILLUMINANCE_MEASUREMENT,
@@ -619,6 +627,8 @@ void send_illuminance(zb_uint8_t param)
             // Report buffer is in use. Retry sending on cb
             Log_printf(LogModule_Zigbee_App, Log_INFO,  "buffer is in use, skip");
           }
+*/
+    send_report(ZB_ZCL_CLUSTER_ID_ILLUMINANCE_MEASUREMENT, ZB_ZCL_ATTR_ILLUMINANCE_MEASUREMENT_MEASURED_VALUE_ID);
 }
 #endif
 
@@ -637,7 +647,9 @@ void pwm_init_param(void)
     pwm = PWM_open(CONFIG_PWM_0, &pwmParams);
     if (pwm == NULL) {
         // PWM_open() failed
-        while (1);
+//        while (1);
+        Log_printf(LogModule_Zigbee_App, Log_ERROR, "PWM open failed");
+        zb_reset(0);
     }
 }
 
@@ -652,7 +664,9 @@ void adc_init_param(void)
     adc = ADC_open(CONFIG_ADC_0, &params);
     if (adc == NULL) {
         // ADC_open() failed
-        while (1) {}
+//        while (1) {}
+        Log_printf(LogModule_Zigbee_App, Log_ERROR, "ADC open failed");
+        zb_reset(0);
     }
 }
 
@@ -861,7 +875,7 @@ static void configure_attribute_reporting(void){
     reporting_info.manuf_code = ZB_ZCL_MANUFACTURER_WILDCARD_ID,
     reporting_info.u.send_info.min_interval = RPT_MIN;
     reporting_info.u.send_info.max_interval = RPT_MAX;
-    reporting_info.u.send_info.delta.u16 = 2;
+    reporting_info.u.send_info.delta.u16 = 10;
     reporting_info.u.send_info.reported_value.u16 = 0x0000;
     reporting_info.u.send_info.def_min_interval = RPT_MIN;
     reporting_info.u.send_info.def_max_interval = RPT_MAX;
@@ -897,8 +911,33 @@ static void configure_attribute_reporting(void){
 
 }
 
+static void send_report(zb_uint16_t cluster_id, zb_uint16_t attr_id)
+{
+    zb_zcl_reporting_info_t cmd = {
+        .ep = ZB_SWITCH_ENDPOINT,
+        .cluster_id = cluster_id,
+        .cluster_role = ZB_ZCL_CLUSTER_SERVER_ROLE,
+        .attr_id = attr_id,
+        .dst.short_addr = 0x0000,
+        .dst.endpoint = ZB_SWITCH_ENDPOINT,
+        .dst.profile_id = ZB_AF_HA_PROFILE_ID,
+        .manuf_code = ZB_ZCL_MANUFACTURER_WILDCARD_ID,
+    };
+    if (ZCL_CTX().reporting_ctx.buf_ref != ZB_UNDEFINED_BUFFER)
+    {
+        Log_printf(LogModule_Zigbee_App, Log_INFO,  "buffer is free, send report");
+        zb_zcl_send_report_attr_command(&cmd, ZCL_CTX().reporting_ctx.buf_ref);
+        ZCL_CTX().reporting_ctx.buf_ref = ZB_UNDEFINED_BUFFER;
+    }
+    else
+    {
+        Log_printf(LogModule_Zigbee_App, Log_INFO,  "buffer is in use, skip");
+    }
+}
+
 void send_voltage(zb_uint8_t param)
 {
+/*
         zb_zcl_reporting_info_t cmd = {
             .ep = ZB_SWITCH_ENDPOINT,
             .cluster_id = ZB_ZCL_CLUSTER_ID_POWER_CONFIG,
@@ -920,10 +959,13 @@ void send_voltage(zb_uint8_t param)
             // Report buffer is in use. Retry sending on cb
             Log_printf(LogModule_Zigbee_App, Log_INFO,  "buffer is in use, skip");
           }
+*/
+    send_report(ZB_ZCL_CLUSTER_ID_POWER_CONFIG, ZB_ZCL_ATTR_POWER_CONFIG_BATTERY_VOLTAGE_ID);
 }
 
 void send_percentage(zb_uint8_t param)
 {
+/*
         zb_zcl_reporting_info_t cmd = {
             .ep = ZB_SWITCH_ENDPOINT,
             .cluster_id = ZB_ZCL_CLUSTER_ID_POWER_CONFIG,
@@ -945,10 +987,13 @@ void send_percentage(zb_uint8_t param)
             // Report buffer is in use. Retry sending on cb
             Log_printf(LogModule_Zigbee_App, Log_INFO,  "buffer is in use, skip");
           }
+*/
+    send_report(ZB_ZCL_CLUSTER_ID_POWER_CONFIG, ZB_ZCL_ATTR_POWER_CONFIG_BATTERY_PERCENTAGE_REMAINING_ID);
 }
 
 void send_soil_moisture(zb_uint8_t param)
 {
+/*
         zb_zcl_reporting_info_t cmd = {
             .ep = ZB_SWITCH_ENDPOINT,
             .cluster_id = ZB_ZCL_CLUSTER_ID_SOIL_MOISTURE_MEASUREMENT,
@@ -970,10 +1015,13 @@ void send_soil_moisture(zb_uint8_t param)
             // Report buffer is in use. Retry sending on cb
             Log_printf(LogModule_Zigbee_App, Log_INFO,  "buffer is in use, skip");
           }
+*/
+    send_report(ZB_ZCL_CLUSTER_ID_SOIL_MOISTURE_MEASUREMENT, ZB_ZCL_ATTR_SOIL_MOISTURE_MEASUREMENT_VALUE_ID);
 }
 
 zb_uint8_t getBatteryRemainingPercentageZCLCR2032(zb_uint16_t volt16) {
-    float battery_level;
+//    float battery_level;
+    zb_uint16_t battery_level;
     if (volt16 >= 3000) {
         battery_level = 100;
     } else if (volt16 > 2900) {
@@ -1002,6 +1050,8 @@ zb_uint8_t getBatteryRemainingPercentageZCL(zb_uint16_t volt16) {
 
 zb_uint16_t getVoltage(zb_uint8_t voltCount)
 {
+    if (voltCount == 0) return 0;
+
     uint32_t currentVoltage = 0;
     uint16_t average_currentVoltage = 0;
     for (uint8_t i=0; i<voltCount; i++)
@@ -1034,7 +1084,8 @@ void update_attr_value(zb_uint8_t param)
     zb_uint16_t zclSoilMoisture = ZB_ZCL_SOIL_MOISTURE_MEASUREMENT_VALUE_DEFAULT_VALUE;
     if (press_buttom_update_attr == 0)
     {
-      zclSoilMoisture = soil_moisture(10)*100;
+//      zclSoilMoisture = soil_moisture(10)*100;
+      zclSoilMoisture = soil_moisture(10, currentVoltage)*100;
     }
     Log_printf(LogModule_Zigbee_App, Log_INFO, "update_attr_value zclSoilMoisture %d", zclSoilMoisture);
     zb_zcl_status_t zcl_status;
@@ -1088,29 +1139,41 @@ void off_network_attention(zb_uint8_t param)
   ZB_SCHEDULE_APP_ALARM(off_network_attention, 0, 1 * ZB_TIME_ONE_SECOND);
 }
 
-zb_uint16_t soil_moisture(zb_uint8_t adcCount)
+//zb_uint16_t soil_moisture(zb_uint8_t adcCount)
+zb_uint16_t soil_moisture(zb_uint8_t adcCount, zb_uint16_t cachedVoltage)
 {
-//    pwm_init_param();
-//    adc_init_param();
+    if (adcCount == 0) return 0;
+
     PWM_start(pwm);                          // start PWM with 0% duty cycle
 
     int_fast16_t res;
     uint16_t adcValue = 0;
     uint32_t adcValueUv = 0;
     uint32_t average_adcValueUv = 0;
+    uint8_t successCount = 0;
     for (uint8_t i=0; i<adcCount; i++)
     {
       res = ADC_convert(adc, &adcValue);
       if (res == ADC_STATUS_SUCCESS)
       {
         adcValueUv += ADC_convertToMicroVolts(adc, adcValue);
+        successCount++;
       }
     }
-    average_adcValueUv = adcValueUv/adcCount;
+//    average_adcValueUv = adcValueUv/adcCount;
+    if (successCount == 0)
+    {
+          Log_printf(LogModule_Zigbee_App, Log_ERROR, "All ADC conversions failed");
+          PWM_stop(pwm);
+          return 0;
+    }
+    average_adcValueUv = adcValueUv/successCount;
     Log_printf(LogModule_Zigbee_App, Log_INFO, "adcValueUv %d", average_adcValueUv);
 //    uint16_t soilMoisture = map(average_adcValueUv, 2430000, 1230000, 0, 100);
 //    zb_uint16_t currentVoltage = BatteryMonitor_getVoltage() + BATTERY_MONITOR_COMPENSATION;
-    zb_uint16_t currentVoltage = getVoltage(10) + BATTERY_MONITOR_COMPENSATION;
+
+//    zb_uint16_t currentVoltage = getVoltage(10) + BATTERY_MONITOR_COMPENSATION;
+    zb_uint16_t currentVoltage = cachedVoltage;
 //https://docs.google.com/spreadsheets/d/16dDWsCKdl5FPHnDMNISL_V-6fvgtwrPjKINCnCKr_yo/edit?gid=0#gid=0
     uint16_t soilMoisture = map(average_adcValueUv, AIR_COMPENSATION_FORMULA(currentVoltage), WATER_COMPENSATION_FORMULA(currentVoltage), 0, 100);
     Log_printf(LogModule_Zigbee_App, Log_INFO, "soilMoisture %d average_adcValueUv %d currentVoltage %d", soilMoisture, average_adcValueUv, currentVoltage);
@@ -1421,11 +1484,11 @@ void zboss_signal_handler(zb_uint8_t param)
 
 void device_interface_cb(zb_uint8_t param)
 {
-  zb_zcl_attr_t *attr_desc;
-  zb_uint16_t mask;
+//  zb_zcl_attr_t *attr_desc;
+//  zb_uint16_t mask;
   zb_zcl_device_callback_param_t *device_cb_param =
           ZB_BUF_GET_PARAM(param, zb_zcl_device_callback_param_t);
-  const zb_zcl_parsed_hdr_t *in_cmd_info = ZB_ZCL_DEVICE_CMD_PARAM_CMD_INFO(param);
+//  const zb_zcl_parsed_hdr_t *in_cmd_info = ZB_ZCL_DEVICE_CMD_PARAM_CMD_INFO(param);
 
   Log_printf(LogModule_Zigbee_App, Log_INFO, "device_interface_cb param %d id %d",
              param, device_cb_param->device_cb_id);

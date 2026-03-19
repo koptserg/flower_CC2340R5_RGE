@@ -1,5 +1,4 @@
 "./bh1750.o"
-"./bme280i2c.o"
 "./flash_interface_internal.o"
 "./on_off_switch_ota_client.o"
 "./syscfg/ti_devices_config.o"

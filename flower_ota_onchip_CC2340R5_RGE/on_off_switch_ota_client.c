@@ -321,7 +321,7 @@ MAIN()
 
   g_dev_ctx.ota_attr.manufacturer = 0xBEBE;
   g_dev_ctx.ota_attr.image_type = 0x2340;
-  g_dev_ctx.ota_attr.file_version = 0x24000004;
+  g_dev_ctx.ota_attr.file_version = 0x24000005;
 
   /* Global ZBOSS initialization */
   ZB_INIT("on_off_switch");
@@ -398,15 +398,18 @@ MAIN()
 #endif
 #ifdef BH1750
     bh1750_detect = bh1750_init(BH1750_mode);
+    Log_printf(LogModule_Zigbee_App, Log_INFO, "bh1750_detect %d", bh1750_detect);
 #endif
 #ifdef OPT3001
     config.conversion_time = OPT3001_800MS;
     config.mode = SINGLE_SHOT;
     config.range = OPT3001_RANGE_AUTO;
     opt3001_detect = OPT3001_begin(0x44);
+    Log_printf(LogModule_Zigbee_App, Log_INFO, "opt3001_detect %d", opt3001_detect);
 #endif
 #ifdef TMP102
     tmp102_detect = tmp102_begin(TMP102_I2CADDR);
+    Log_printf(LogModule_Zigbee_App, Log_INFO, "tmp102_detect %d", tmp102_detect);
 #endif
 #if defined (BH1750) || defined (TMP102) || defined (OPT3001)
     zclSampleSw_I2cClose();
@@ -486,29 +489,6 @@ static void update_attr_temperature_value(zb_uint8_t param)
 
 void send_temperature(zb_uint8_t param)
 {
-/*
-        zb_zcl_reporting_info_t cmd = {
-            .ep = ZB_SWITCH_ENDPOINT,
-            .cluster_id = ZB_ZCL_CLUSTER_ID_TEMP_MEASUREMENT,
-            .cluster_role = ZB_ZCL_CLUSTER_SERVER_ROLE,
-            .attr_id = ZB_ZCL_ATTR_TEMP_MEASUREMENT_VALUE_ID,
-            .dst.short_addr = 0x0000,
-            .dst.endpoint = ZB_SWITCH_ENDPOINT,
-            .dst.profile_id = ZB_AF_HA_PROFILE_ID,
-            .manuf_code = ZB_ZCL_MANUFACTURER_WILDCARD_ID,
-        };
-        if (ZCL_CTX().reporting_ctx.buf_ref != ZB_UNDEFINED_BUFFER)
-          {
-            Log_printf(LogModule_Zigbee_App, Log_INFO,  "buffer is free, send report");
-            zb_zcl_send_report_attr_command(&cmd, ZCL_CTX().reporting_ctx.buf_ref);
-            ZCL_CTX().reporting_ctx.buf_ref = ZB_UNDEFINED_BUFFER;
-          }
-        else
-          {
-            // Report buffer is in use. Retry sending on cb
-            Log_printf(LogModule_Zigbee_App, Log_INFO,  "buffer is in use, skip");
-          }
-*/
         send_report(ZB_ZCL_CLUSTER_ID_TEMP_MEASUREMENT, ZB_ZCL_ATTR_TEMP_MEASUREMENT_VALUE_ID);
 }
 #endif
@@ -605,29 +585,6 @@ static void update_attr_illuminance_value(zb_uint8_t param)
 
 void send_illuminance(zb_uint8_t param)
 {
-/*
-        zb_zcl_reporting_info_t cmd = {
-            .ep = ZB_SWITCH_ENDPOINT,
-            .cluster_id = ZB_ZCL_CLUSTER_ID_ILLUMINANCE_MEASUREMENT,
-            .cluster_role = ZB_ZCL_CLUSTER_SERVER_ROLE,
-            .attr_id = ZB_ZCL_ATTR_ILLUMINANCE_MEASUREMENT_MEASURED_VALUE_ID,
-            .dst.short_addr = 0x0000,
-            .dst.endpoint = ZB_SWITCH_ENDPOINT,
-            .dst.profile_id = ZB_AF_HA_PROFILE_ID,
-            .manuf_code = ZB_ZCL_MANUFACTURER_WILDCARD_ID,
-        };
-        if (ZCL_CTX().reporting_ctx.buf_ref != ZB_UNDEFINED_BUFFER)
-          {
-            Log_printf(LogModule_Zigbee_App, Log_INFO,  "buffer is free, send report");
-            zb_zcl_send_report_attr_command(&cmd, ZCL_CTX().reporting_ctx.buf_ref);
-            ZCL_CTX().reporting_ctx.buf_ref = ZB_UNDEFINED_BUFFER;
-          }
-        else
-          {
-            // Report buffer is in use. Retry sending on cb
-            Log_printf(LogModule_Zigbee_App, Log_INFO,  "buffer is in use, skip");
-          }
-*/
     send_report(ZB_ZCL_CLUSTER_ID_ILLUMINANCE_MEASUREMENT, ZB_ZCL_ATTR_ILLUMINANCE_MEASUREMENT_MEASURED_VALUE_ID);
 }
 #endif
@@ -937,85 +894,16 @@ static void send_report(zb_uint16_t cluster_id, zb_uint16_t attr_id)
 
 void send_voltage(zb_uint8_t param)
 {
-/*
-        zb_zcl_reporting_info_t cmd = {
-            .ep = ZB_SWITCH_ENDPOINT,
-            .cluster_id = ZB_ZCL_CLUSTER_ID_POWER_CONFIG,
-            .cluster_role = ZB_ZCL_CLUSTER_SERVER_ROLE,
-            .attr_id = ZB_ZCL_ATTR_POWER_CONFIG_BATTERY_VOLTAGE_ID,
-            .dst.short_addr = 0x0000,
-            .dst.endpoint = ZB_SWITCH_ENDPOINT,
-            .dst.profile_id = ZB_AF_HA_PROFILE_ID,
-            .manuf_code = ZB_ZCL_MANUFACTURER_WILDCARD_ID,
-        };
-        if (ZCL_CTX().reporting_ctx.buf_ref != ZB_UNDEFINED_BUFFER)
-          {
-            Log_printf(LogModule_Zigbee_App, Log_INFO,  "buffer is free, send report");
-            zb_zcl_send_report_attr_command(&cmd, ZCL_CTX().reporting_ctx.buf_ref);
-            ZCL_CTX().reporting_ctx.buf_ref = ZB_UNDEFINED_BUFFER;
-          }
-        else
-          {
-            // Report buffer is in use. Retry sending on cb
-            Log_printf(LogModule_Zigbee_App, Log_INFO,  "buffer is in use, skip");
-          }
-*/
     send_report(ZB_ZCL_CLUSTER_ID_POWER_CONFIG, ZB_ZCL_ATTR_POWER_CONFIG_BATTERY_VOLTAGE_ID);
 }
 
 void send_percentage(zb_uint8_t param)
 {
-/*
-        zb_zcl_reporting_info_t cmd = {
-            .ep = ZB_SWITCH_ENDPOINT,
-            .cluster_id = ZB_ZCL_CLUSTER_ID_POWER_CONFIG,
-            .cluster_role = ZB_ZCL_CLUSTER_SERVER_ROLE,
-            .attr_id = ZB_ZCL_ATTR_POWER_CONFIG_BATTERY_PERCENTAGE_REMAINING_ID,
-            .dst.short_addr = 0x0000,
-            .dst.endpoint = ZB_SWITCH_ENDPOINT,
-            .dst.profile_id = ZB_AF_HA_PROFILE_ID,
-            .manuf_code = ZB_ZCL_MANUFACTURER_WILDCARD_ID,
-        };
-        if (ZCL_CTX().reporting_ctx.buf_ref != ZB_UNDEFINED_BUFFER)
-          {
-            Log_printf(LogModule_Zigbee_App, Log_INFO,  "buffer is free, send report");
-            zb_zcl_send_report_attr_command(&cmd, ZCL_CTX().reporting_ctx.buf_ref);
-            ZCL_CTX().reporting_ctx.buf_ref = ZB_UNDEFINED_BUFFER;
-          }
-        else
-          {
-            // Report buffer is in use. Retry sending on cb
-            Log_printf(LogModule_Zigbee_App, Log_INFO,  "buffer is in use, skip");
-          }
-*/
     send_report(ZB_ZCL_CLUSTER_ID_POWER_CONFIG, ZB_ZCL_ATTR_POWER_CONFIG_BATTERY_PERCENTAGE_REMAINING_ID);
 }
 
 void send_soil_moisture(zb_uint8_t param)
 {
-/*
-        zb_zcl_reporting_info_t cmd = {
-            .ep = ZB_SWITCH_ENDPOINT,
-            .cluster_id = ZB_ZCL_CLUSTER_ID_SOIL_MOISTURE_MEASUREMENT,
-            .cluster_role = ZB_ZCL_CLUSTER_SERVER_ROLE,
-            .attr_id = ZB_ZCL_ATTR_SOIL_MOISTURE_MEASUREMENT_VALUE_ID,
-            .dst.short_addr = 0x0000,
-            .dst.endpoint = ZB_SWITCH_ENDPOINT,
-            .dst.profile_id = ZB_AF_HA_PROFILE_ID,
-            .manuf_code = ZB_ZCL_MANUFACTURER_WILDCARD_ID,
-        };
-        if (ZCL_CTX().reporting_ctx.buf_ref != ZB_UNDEFINED_BUFFER)
-          {
-            Log_printf(LogModule_Zigbee_App, Log_INFO,  "buffer is free, send report");
-            zb_zcl_send_report_attr_command(&cmd, ZCL_CTX().reporting_ctx.buf_ref);
-            ZCL_CTX().reporting_ctx.buf_ref = ZB_UNDEFINED_BUFFER;
-          }
-        else
-          {
-            // Report buffer is in use. Retry sending on cb
-            Log_printf(LogModule_Zigbee_App, Log_INFO,  "buffer is in use, skip");
-          }
-*/
     send_report(ZB_ZCL_CLUSTER_ID_SOIL_MOISTURE_MEASUREMENT, ZB_ZCL_ATTR_SOIL_MOISTURE_MEASUREMENT_VALUE_ID);
 }
 
@@ -1350,6 +1238,8 @@ void zboss_signal_handler(zb_uint8_t param)
 
         zb_zdo_mgmt_permit_joining_req(buf, permit_joining_cb);
 
+        configure_attribute_reporting();
+
         break;
       case ZB_BDB_SIGNAL_DEVICE_REBOOT:
         Log_printf(LogModule_Zigbee_App, Log_INFO, "Device RESTARTED OK");
@@ -1377,7 +1267,7 @@ void zboss_signal_handler(zb_uint8_t param)
         Log_printf(LogModule_Zigbee_App, Log_INFO, "Device (%d) STARTED OK", device_type);
         Log_printf(LogModule_Zigbee_App, Log_INFO, "ZB_JOINED status %d", ZB_JOINED());
 
-        configure_attribute_reporting();
+//           configure_attribute_reporting();
         timer_update(0);
 
 //        zb_zdo_pim_set_long_poll_interval(ED_POLL_RATE);

@@ -28,20 +28,10 @@ bool tmp102_begin(uint8_t deviceAddress)
 {
   _address = deviceAddress; // If provided, store the I2C address from user
 
-//  _i2cPort->beginTransmission(_address);
-
-//  uint8_t error = _i2cPort->endTransmission();
-
-//  if (error == 0)
-//  {
-//    return true; // Device online!
-//  }
-//  else
-//    return false; // Device not attached?
   I2C_Transaction i2cTransaction = {0};
   uint8_t writeBuffer[1];
   writeBuffer[0] = CONFIG_REGISTER;
-
+  // Set configuration registers
   i2cTransaction.targetAddress = _address;
   i2cTransaction.writeBuf = writeBuffer;
   i2cTransaction.writeCount = 1;
@@ -66,15 +56,11 @@ bool tmp102_begin(uint8_t deviceAddress)
 
 void tmp102_openPointerRegister(uint8_t pointerReg)
 {
-/*
-  _i2cPort->beginTransmission(_address); // Connect to TMP102
-  _i2cPort->write(pointerReg);           // Open specified register
-  _i2cPort->endTransmission();           // Close communication with TMP102
-*/
   I2C_Transaction i2cTransaction = {0};
   uint8_t writeBuffer[1];
   writeBuffer[0] = pointerReg;
 
+  // Set configuration registers
   i2cTransaction.targetAddress = _address;
   i2cTransaction.writeBuf = writeBuffer;
   i2cTransaction.writeCount = 1;
@@ -98,10 +84,6 @@ static uint8_t tmp102_readRegister(bool registerNumber)
   uint8_t registerByte[2]; // We'll store the data from the registers here
 
   // Read current configuration register value
-//  _i2cPort->requestFrom(_address, 2);   // Read two bytes from TMP102
-//  registerByte[0] = (_i2cPort->read()); // Read first byte
-//  registerByte[1] = (_i2cPort->read()); // Read second byte
-
   i2cTransaction.targetAddress = _address;
   i2cTransaction.writeBuf = NULL;
   i2cTransaction.writeCount = 0;
@@ -185,12 +167,6 @@ void tmp102_setConversionRate(uint8_t rate)
   registerByte[1] |= rate << 6; // Shift in new conversion rate
 
   // Set configuration registers
-//  _i2cPort->beginTransmission(_address);
-//  _i2cPort->write(CONFIG_REGISTER); // Point to configuration register
-//  _i2cPort->write(registerByte[0]); // Write first byte
-//  _i2cPort->write(registerByte[1]); // Write second byte
-//  _i2cPort->endTransmission();      // Close communication with TMP102
-
   I2C_Transaction i2cTransaction = {0};
   uint8_t writeBuffer[3];
   writeBuffer[0] = CONFIG_REGISTER;
@@ -230,12 +206,6 @@ void tmp102_setExtendedMode(bool mode)
   registerByte[1] |= mode << 4; // Shift in new exentended mode bit
 
   // Set configuration registers
-//  _i2cPort->beginTransmission(_address);
-//  _i2cPort->write(CONFIG_REGISTER); // Point to configuration register
-//  _i2cPort->write(registerByte[0]); // Write first byte
-//  _i2cPort->write(registerByte[1]); // Write second byte
-//  _i2cPort->endTransmission();      // Close communication with TMP102
-
   I2C_Transaction i2cTransaction = {0};
   uint8_t writeBuffer[3];
   writeBuffer[0] = CONFIG_REGISTER;
@@ -272,11 +242,6 @@ void tmp102_sleep(void)
   registerByte |= 0x01; // Set SD (bit 0 of first byte)
 
   // Set configuration register
-//  _i2cPort->beginTransmission(_address);
-//  _i2cPort->write(CONFIG_REGISTER); // Point to configuration register
-//  _i2cPort->write(registerByte);    // Write first byte
-//  _i2cPort->endTransmission();      // Close communication with TMP102
-
     I2C_Transaction i2cTransaction = {0};
     uint8_t writeBuffer[2];
     writeBuffer[0] = CONFIG_REGISTER;
@@ -312,11 +277,6 @@ void tmp102_wakeup(void)
   registerByte &= 0xFE; // Clear SD (bit 0 of first byte)
 
   // Set configuration registers
-//  _i2cPort->beginTransmission(_address);
-//  _i2cPort->write(CONFIG_REGISTER); // Point to configuration register
-//  _i2cPort->write(registerByte);    // Write first byte
-//  _i2cPort->endTransmission();      // Close communication with TMP102
-
   I2C_Transaction i2cTransaction = {0};
   uint8_t writeBuffer[2];
   writeBuffer[0] = CONFIG_REGISTER;
@@ -354,11 +314,6 @@ void tmp102_setAlertPolarity(bool polarity)
   registerByte |= polarity << 2; // Shift in new POL bit
 
   // Set configuration register
-//  _i2cPort->beginTransmission(_address);
-//  _i2cPort->write(CONFIG_REGISTER); // Point to configuration register
-//  _i2cPort->write(registerByte);    // Write first byte
-//  _i2cPort->endTransmission();      // Close communication with TMP102
-
   I2C_Transaction i2cTransaction = {0};
   uint8_t writeBuffer[2];
   writeBuffer[0] = CONFIG_REGISTER;
@@ -400,11 +355,6 @@ bool tmp102_oneShot(bool setOneShot)
   uint8_t registerByte; // Store the data from the register here
 
   // Read the first byte of the configuration register
-//  _i2cPort->beginTransmission(_address);
-//  _i2cPort->write(CONFIG_REGISTER);
-//  _i2cPort->requestFrom(_address, 1);
-//  registerByte = _i2cPort->read();
-
   // Change pointer address to configuration register (1)
   tmp102_openPointerRegister(CONFIG_REGISTER);
 
@@ -416,11 +366,6 @@ bool tmp102_oneShot(bool setOneShot)
     registerByte |= (1 << 7);
 
     // Set configuration register
-//    _i2cPort->beginTransmission(_address);
-//    _i2cPort->write(CONFIG_REGISTER); // Point to configuration register
-//    _i2cPort->write(registerByte);    // Write first byte
-//    _i2cPort->endTransmission();      // Close communication with TMP102
-
     I2C_Transaction i2cTransaction = {0};
     uint8_t writeBuffer[2];
     writeBuffer[0] = CONFIG_REGISTER;
@@ -491,12 +436,6 @@ void tmp102_setLowTempC(float temperature)
   }
 
   // Write to T_LOW Register
-//  _i2cPort->beginTransmission(_address);
-//  _i2cPort->write(T_LOW_REGISTER);  // Point to T_LOW
-//  _i2cPort->write(registerByte[0]); // Write first byte
-//  _i2cPort->write(registerByte[1]); // Write second byte
-//  _i2cPort->endTransmission();      // Close communication with TMP102
-
   I2C_Transaction i2cTransaction = {0};
   uint8_t writeBuffer[3];
   writeBuffer[0] = T_LOW_REGISTER;
@@ -560,12 +499,6 @@ void tmp102_setHighTempC(float temperature)
   }
 
   // Write to T_HIGH Register
-//  _i2cPort->beginTransmission(_address);
-//  _i2cPort->write(T_HIGH_REGISTER); // Point to T_HIGH register
-//  _i2cPort->write(registerByte[0]); // Write first byte
-//  _i2cPort->write(registerByte[1]); // Write second byte
-//  _i2cPort->endTransmission();      // Close communication with TMP102
-
   I2C_Transaction i2cTransaction = {0};
   uint8_t writeBuffer[3];
   writeBuffer[0] = T_HIGH_REGISTER;
@@ -726,11 +659,6 @@ void tmp102_setFault(uint8_t faultSetting)
   registerByte |= faultSetting << 3; // Shift new fault setting
 
   // Set configuration registers
-//  _i2cPort->beginTransmission(_address);
-//  _i2cPort->write(CONFIG_REGISTER); // Point to configuration register
-//  _i2cPort->write(registerByte);    // Write byte to register
-//  _i2cPort->endTransmission();      // Close communication with TMP102
-
   I2C_Transaction i2cTransaction = {0};
   uint8_t writeBuffer[2];
   writeBuffer[0] = CONFIG_REGISTER;
@@ -768,11 +696,6 @@ void tmp102_setAlertMode(bool mode)
   registerByte |= mode << 1; // Shift in new TM bit
 
   // Set configuration registers
-//  _i2cPort->beginTransmission(_address);
-//  _i2cPort->write(CONFIG_REGISTER); // Point to configuration register
-//  _i2cPort->write(registerByte);    // Write byte to register
-//  _i2cPort->endTransmission();      // Close communication with TMP102
-
   I2C_Transaction i2cTransaction = {0};
   uint8_t writeBuffer[2];
   writeBuffer[0] = CONFIG_REGISTER;

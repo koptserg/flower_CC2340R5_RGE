@@ -45,21 +45,6 @@ void OPT3001_set_address(uint8_t address)
  */
 bool OPT3001_write(uint8_t *input, OPT3001_reg_t address)
 {
-/*
-    bool result = true;
-    Wire.beginTransmission(device_address);
-    Wire.write(address);
-    for (size_t i = 0; i < length; i++)
-    {
-        Wire.write(input[i]);
-    }
-
-    if (Wire.endTransmission() != 0)
-    {
-        result = false;
-    }
-    return result;
-*/
     bool result = true;
     I2C_Transaction i2cTransaction = {0};
     uint8_t writeBuffer[3];
@@ -95,24 +80,6 @@ bool OPT3001_write(uint8_t *input, OPT3001_reg_t address)
  */
 bool OPT3001_read(uint8_t *output, OPT3001_reg_t address)
 {
-/*
-    bool result = true;
-    Wire.beginTransmission(address);
-    Wire.write(address);
-    if (Wire.endTransmission() != 0)
-        result = false;
-
-    else // OK, all worked, keep going
-    {
-        Wire.requestFrom(address, length);
-        for (size_t i = 0; (i < length) and Wire.available(); i++)
-        {
-            uint8_t c = Wire.read();
-            output[i] = c;
-        }
-    }
-    return result;
-*/
     bool result = true;
     I2C_Transaction i2cTransaction = {0};
     uint8_t writeBuffer[1];
@@ -147,10 +114,8 @@ bool OPT3001_read(uint8_t *output, OPT3001_reg_t address)
  */
 void OPT3001_apply_config(void)
 {
-//    OPT3001_read_config();
 //    Log_printf(LogModule_Zigbee_App, Log_INFO, "OPT3001_CONFIG write %x" , config.raw);
     OPT3001_write((uint8_t *)&config.raw, OPT3001_CONFIG);
-//    OPT3001_read_config();
 }
 
 /**

@@ -7,7 +7,7 @@
     #endif
 
     #include "version.h"
-const char date_code[] = "04.03.26 21:47";
+const char date_code[] = "26.03.26 18:54";
 
     #ifdef __cplusplus
     }

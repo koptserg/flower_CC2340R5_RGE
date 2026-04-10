@@ -44,6 +44,7 @@
 #include <stdint.h>
 #include <ti/log/Log.h>
 #include "version.h"
+#include <math.h>
 
 #include "on_off_switch_ota_client.h"
 
@@ -321,7 +322,7 @@ MAIN()
 
   g_dev_ctx.ota_attr.manufacturer = 0xBEBE;
   g_dev_ctx.ota_attr.image_type = 0x2340;
-  g_dev_ctx.ota_attr.file_version = 0x24000005;
+  g_dev_ctx.ota_attr.file_version = 0x24000006;
 
   /* Global ZBOSS initialization */
   ZB_INIT("on_off_switch");
@@ -549,8 +550,10 @@ static void update_attr_illuminance_value(zb_uint8_t param)
 #ifdef BH1750
       if (param == illuminance_param && bh1750_detect == true)
       {
-        zclIlluminance = (uint16_t)(bh1750_Read());
-        Log_printf(LogModule_Zigbee_App, Log_INFO, "update_bh1750_attr_illuminance_value zclIlluminance %d", zclIlluminance);
+//        zclIlluminance = (uint16_t)(bh1750_Read());
+        zclIlluminance = (uint16_t)(10000 * log10(bh1750_Read()) + 1);
+
+        Log_printf(LogModule_Zigbee_App, Log_INFO, "update_bh1750_attr_illuminance_value zclIlluminance %f", zclIlluminance);
       bh1750_PowerDown();
       }
 #endif
@@ -558,8 +561,10 @@ static void update_attr_illuminance_value(zb_uint8_t param)
       if (param == illuminance_param && opt3001_detect == true)
       {
         uint32_t raw_illuminance = OPT3001_get_illuminance();
-        zclIlluminance = (uint16_t)(raw_illuminance);
-        Log_printf(LogModule_Zigbee_App, Log_INFO, "update_opt3001_attr_illuminance_value zclIlluminance %d", zclIlluminance);
+//        zclIlluminance = (uint16_t)(raw_illuminance);
+        zclIlluminance = (uint16_t)(10000 * log10(raw_illuminance) + 1);
+
+        Log_printf(LogModule_Zigbee_App, Log_INFO, "update_opt3001_attr_illuminance_value zclIlluminance %f", zclIlluminance);
       }
 #endif
     }

@@ -129,6 +129,7 @@ bool tmp102_detect;
 #endif
 
 bool press_buttom_update_attr = 0;
+zb_uint16_t currentVoltage = 0;
 
 /****** Application function declarations ******/
 zb_uint8_t zcl_specific_cluster_cmd_handler(zb_uint8_t param);
@@ -140,11 +141,15 @@ void device_interface_cb(zb_uint8_t param);
 void device_reset_after(zb_uint8_t param);
 void led_blink(zb_uint8_t count);
 void led_blink_cb(zb_uint8_t count, zb_uint8_t led_no);
-void update_attr_value(zb_uint8_t param);
+//void update_attr_value(zb_uint8_t param);
+void update_attr_battery_value(zb_uint8_t param);
+void update_attr_moisture_value(zb_uint8_t param);
+
 //zb_uint16_t soil_moisture(zb_uint8_t adcCount);
 zb_uint16_t soil_moisture(zb_uint8_t adcCount, zb_uint16_t cachedVoltage);
 void pwm_init_param(void);
 void timer_update(zb_uint8_t param);
+void timer2_update(zb_uint8_t param);
 void adc_init_param(void);
 
 #if defined (BH1750) || defined (TMP102) || defined (OPT3001)
@@ -322,7 +327,7 @@ MAIN()
 
   g_dev_ctx.ota_attr.manufacturer = 0xBEBE;
   g_dev_ctx.ota_attr.image_type = 0x2340;
-  g_dev_ctx.ota_attr.file_version = 0x24000006;
+  g_dev_ctx.ota_attr.file_version = 0x24000007;
 
   /* Global ZBOSS initialization */
   ZB_INIT("on_off_switch");
@@ -758,8 +763,14 @@ void timer_update(zb_uint8_t param)
         tmp102_start_measuremts(4);
       }
 #endif
-      update_attr_value(1);
+      update_attr_moisture_value(2);
       ZB_SCHEDULE_APP_ALARM(timer_update, param, ZB_TIME_ONE_SECOND *10); // 10 sec
+}
+
+void timer2_update(zb_uint8_t param)
+{
+      update_attr_battery_value(1);
+      ZB_SCHEDULE_APP_ALARM(timer2_update, param, ZB_TIME_ONE_SECOND *600); // 600 sec
 }
 
 long map(long x, long in_min, long in_max, long out_min, long out_max)
@@ -956,7 +967,7 @@ zb_uint16_t getVoltage(zb_uint8_t voltCount)
 
     return average_currentVoltage;
 }
-
+/*
 void update_attr_value(zb_uint8_t param)
 {
 //    zb_uint16_t currentVoltage = BatteryMonitor_getVoltage() + BATTERY_MONITOR_COMPENSATION;
@@ -992,18 +1003,18 @@ void update_attr_value(zb_uint8_t param)
     {
             Log_printf(LogModule_Zigbee_App, Log_INFO, "update_attr_value Set zclSoilMoisture value fail. zcl_status: %d", zcl_status);
     }
-/*
-    zcl_status = zb_zcl_set_attr_val(ZB_SWITCH_ENDPOINT,
-                                     ZB_ZCL_CLUSTER_ID_POWER_CONFIG,
-                                     ZB_ZCL_CLUSTER_SERVER_ROLE,
-                                     ZB_ZCL_ATTR_POWER_CONFIG_BATTERY_VOLTAGE_ID,
-                                     (zb_uint8_t *)&zclVoltage,
-                                     ZB_FALSE);
-    if(zcl_status != ZB_ZCL_STATUS_SUCCESS)
-    {
-        Log_printf(LogModule_Zigbee_App, Log_INFO, "update_attr_value Set zclVoltage value fail. zcl_status: %d", zcl_status);
-    }
-*/
+
+//    zcl_status = zb_zcl_set_attr_val(ZB_SWITCH_ENDPOINT,
+//                                     ZB_ZCL_CLUSTER_ID_POWER_CONFIG,
+//                                     ZB_ZCL_CLUSTER_SERVER_ROLE,
+//                                     ZB_ZCL_ATTR_POWER_CONFIG_BATTERY_VOLTAGE_ID,
+//                                     (zb_uint8_t *)&zclVoltage,
+//                                     ZB_FALSE);
+//    if(zcl_status != ZB_ZCL_STATUS_SUCCESS)
+//    {
+//        Log_printf(LogModule_Zigbee_App, Log_INFO, "update_attr_value Set zclVoltage value fail. zcl_status: %d", zcl_status);
+//    }
+
     zcl_status = zb_zcl_set_attr_val(ZB_SWITCH_ENDPOINT,
                                      ZB_ZCL_CLUSTER_ID_POWER_CONFIG,
                                      ZB_ZCL_CLUSTER_SERVER_ROLE,
@@ -1018,6 +1029,64 @@ void update_attr_value(zb_uint8_t param)
     if(param == 0)
     {
       ZB_SCHEDULE_APP_ALARM(send_percentage, 1, ZB_MILLISECONDS_TO_BEACON_INTERVAL(600));
+      ZB_SCHEDULE_APP_ALARM(send_soil_moisture, 2, ZB_MILLISECONDS_TO_BEACON_INTERVAL(900));
+    }
+}
+*/
+void update_attr_battery_value(zb_uint8_t param)
+{
+    currentVoltage = getVoltage(10) + BATTERY_MONITOR_COMPENSATION;
+    zb_uint8_t zclVoltage = currentVoltage/100;
+
+    zb_uint8_t zclPercentage = ZB_ZCL_POWER_CONFIG_BATTERY_REMAINING_UNKNOWN;
+    if (press_buttom_update_attr == 0)
+    {
+      zclPercentage = getBatteryRemainingPercentageZCL(currentVoltage);
+    }
+    Log_printf(LogModule_Zigbee_App, Log_INFO, "update_attr_battery_value currentVoltage %d zclVoltage %d zclPercentage %d",
+               currentVoltage, zclVoltage, zclPercentage);
+
+    zb_zcl_status_t zcl_status;
+    zcl_status = zb_zcl_set_attr_val(ZB_SWITCH_ENDPOINT,
+                                     ZB_ZCL_CLUSTER_ID_POWER_CONFIG,
+                                     ZB_ZCL_CLUSTER_SERVER_ROLE,
+                                     ZB_ZCL_ATTR_POWER_CONFIG_BATTERY_PERCENTAGE_REMAINING_ID,
+                                     (zb_uint8_t *)&zclPercentage,
+                                     ZB_FALSE);
+    if(zcl_status != ZB_ZCL_STATUS_SUCCESS)
+    {
+        Log_printf(LogModule_Zigbee_App, Log_INFO, "update_attr_battery_value Set zclPercentage value fail. zcl_status: %d", zcl_status);
+    }
+
+    if(param == 0)
+    {
+      ZB_SCHEDULE_APP_ALARM(send_percentage, 1, ZB_MILLISECONDS_TO_BEACON_INTERVAL(600));
+    }
+
+}
+
+void update_attr_moisture_value(zb_uint8_t param)
+{
+    zb_uint16_t zclSoilMoisture = ZB_ZCL_SOIL_MOISTURE_MEASUREMENT_VALUE_DEFAULT_VALUE;
+    if (press_buttom_update_attr == 0)
+    {
+      zclSoilMoisture = soil_moisture(10, currentVoltage)*100;
+    }
+    Log_printf(LogModule_Zigbee_App, Log_INFO, "update_attr_moisture_value zclSoilMoisture %d", zclSoilMoisture);
+    zb_zcl_status_t zcl_status;
+    zcl_status = zb_zcl_set_attr_val(ZB_SWITCH_ENDPOINT,
+                                     ZB_ZCL_CLUSTER_ID_SOIL_MOISTURE_MEASUREMENT,
+                                     ZB_ZCL_CLUSTER_SERVER_ROLE,
+                                     ZB_ZCL_ATTR_SOIL_MOISTURE_MEASUREMENT_VALUE_ID,
+                                     (zb_uint8_t *)&zclSoilMoisture,
+                                     ZB_FALSE);
+    if(zcl_status != ZB_ZCL_STATUS_SUCCESS)
+    {
+            Log_printf(LogModule_Zigbee_App, Log_INFO, "update_attr_value Set zclSoilMoisture value fail. zcl_status: %d", zcl_status);
+    }
+
+    if(param == 0)
+    {
       ZB_SCHEDULE_APP_ALARM(send_soil_moisture, 2, ZB_MILLISECONDS_TO_BEACON_INTERVAL(900));
     }
 
@@ -1245,9 +1314,16 @@ void zboss_signal_handler(zb_uint8_t param)
 
         configure_attribute_reporting();
 
+        timer_update(10); // update soil moisture, temperature, illuminance
+        timer2_update(20); // update battery
+
         break;
       case ZB_BDB_SIGNAL_DEVICE_REBOOT:
         Log_printf(LogModule_Zigbee_App, Log_INFO, "Device RESTARTED OK");
+
+        timer_update(10); // update soil moisture, temperature, illuminance
+        timer2_update(20); // update battery
+
         if (perform_factory_reset)
         {
           Log_printf(LogModule_Zigbee_App, Log_INFO, "Performing a factory reset.");
@@ -1273,8 +1349,6 @@ void zboss_signal_handler(zb_uint8_t param)
         Log_printf(LogModule_Zigbee_App, Log_INFO, "ZB_JOINED status %d", ZB_JOINED());
 
 //           configure_attribute_reporting();
-        timer_update(0);
-
 //        zb_zdo_pim_set_long_poll_interval(ED_POLL_RATE);
 
 //        ZB_SCHEDULE_APP_ALARM(start_finding_binding, 0, 3 * ZB_TIME_ONE_SECOND);

@@ -19,7 +19,11 @@ const definition = {
         vendor: 'DIYRuZ',
         description: '[FW](https://github.com/koptserg/flower_CC2340R5_RGE)',
         ota: true,
-    extend: [
+     extend: [
+        battery({
+            access: "STATE",
+            reporting: batteryReporting,
+        }),
         soilMoisture({
             access: "STATE",
             reporting: soilMoistureReporting,
@@ -32,13 +36,10 @@ const definition = {
             access: "STATE",
             reporting: illuminanceReporting,
         }),
-        battery({
-            access: "STATE",
-            reporting: batteryReporting,
-        }),
     ],
+
         configure: async (device, coordinatorEndpoint) => {
-            await reporting.bind(device.getEndpoint(10), coordinatorEndpoint, ["msSoilMoisture", "msIlluminanceMeasurement", "msTemperatureMeasurement"]);  
+            await reporting.bind(device.getEndpoint(10), coordinatorEndpoint, ["genPowerCfg", "msSoilMoisture", "msIlluminanceMeasurement", "msTemperatureMeasurement"]);  
         },
     };
 

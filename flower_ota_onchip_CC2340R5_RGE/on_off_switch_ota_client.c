@@ -327,7 +327,7 @@ MAIN()
 
   g_dev_ctx.ota_attr.manufacturer = 0xBEBE;
   g_dev_ctx.ota_attr.image_type = 0x2340;
-  g_dev_ctx.ota_attr.file_version = 0x24000007;
+  g_dev_ctx.ota_attr.file_version = 0x24000008;
 
   /* Global ZBOSS initialization */
   ZB_INIT("on_off_switch");
@@ -556,10 +556,10 @@ static void update_attr_illuminance_value(zb_uint8_t param)
       if (param == illuminance_param && bh1750_detect == true)
       {
 //        zclIlluminance = (uint16_t)(bh1750_Read());
-        zclIlluminance = (uint16_t)(10000 * log10(bh1750_Read()) + 1);
-
+        uint32_t bh1750_illuminance = bh1750_Read();
+        zclIlluminance = (uint16_t)(10000 * log10(bh1750_illuminance) + 1);
         Log_printf(LogModule_Zigbee_App, Log_INFO, "update_bh1750_attr_illuminance_value zclIlluminance %f", zclIlluminance);
-      bh1750_PowerDown();
+        bh1750_PowerDown();
       }
 #endif
 #ifdef OPT3001
@@ -825,7 +825,7 @@ static void configure_attribute_reporting(void){
     reporting_info.manuf_code = ZB_ZCL_MANUFACTURER_WILDCARD_ID,
     reporting_info.u.send_info.min_interval = RPT_MIN;
     reporting_info.u.send_info.max_interval = RPT_MAX;
-    reporting_info.u.send_info.delta.u16 = 300;
+    reporting_info.u.send_info.delta.u16 = 400;
     reporting_info.u.send_info.reported_value.u16 = 0x0000;
     reporting_info.u.send_info.def_min_interval = RPT_MIN;
     reporting_info.u.send_info.def_max_interval = RPT_MAX;
@@ -848,7 +848,7 @@ static void configure_attribute_reporting(void){
     reporting_info.manuf_code = ZB_ZCL_MANUFACTURER_WILDCARD_ID,
     reporting_info.u.send_info.min_interval = RPT_MIN;
     reporting_info.u.send_info.max_interval = RPT_MAX;
-    reporting_info.u.send_info.delta.u16 = 10;
+    reporting_info.u.send_info.delta.u16 = 500;
     reporting_info.u.send_info.reported_value.u16 = 0x0000;
     reporting_info.u.send_info.def_min_interval = RPT_MIN;
     reporting_info.u.send_info.def_max_interval = RPT_MAX;

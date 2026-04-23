@@ -13,9 +13,9 @@ const {
 	reporting,
 } = require('zigbee-herdsman-converters/lib/modernExtend');
 
-const soilMoistureReporting = {min: 10, max: 1800, change: 300};
+const soilMoistureReporting = {min: 10, max: 1800, change: 400};
 const temperatureReporting = {min: 10, max: 1800, change: 10};
-const illuminanceReporting = {min: 10, max: 1800, change: 100};
+const illuminanceReporting = {min: 10, max: 1800, change: 500};
 const batteryReporting = {min: 10, max: 1800, change: 10};
 
 const definition = {

@@ -53,9 +53,18 @@
 
 //#define AIR_COMPENSATION_FORMULA(ADC)   ((154 * ADC + 1953000))
 //#define WATER_COMPENSATION_FORMULA(ADC) ((130 * ADC + 800000))
+#ifdef BOARD_KOPTSERG
+//koptserg https://docs.google.com/spreadsheets/d/16dDWsCKdl5FPHnDMNISL_V-6fvgtwrPjKINCnCKr_yo/edit?gid=1761255638#gid=1761255638
 #define BATTERY_MONITOR_COMPENSATION    20
 #define AIR_COMPENSATION_FORMULA(ADC)   ((148 * ADC + 1953000))
 #define WATER_COMPENSATION_FORMULA(ADC) ((133 * ADC + 800000))
+#endif
+#ifdef BOARD_DIYZI
+//diyzi https://docs.google.com/spreadsheets/d/16dDWsCKdl5FPHnDMNISL_V-6fvgtwrPjKINCnCKr_yo/edit?gid=958030871#gid=958030871
+#define BATTERY_MONITOR_COMPENSATION    10
+#define AIR_COMPENSATION_FORMULA(ADC)   ((197 * ADC + 1600000))
+#define WATER_COMPENSATION_FORMULA(ADC) ((148 * ADC + 900000))
+#endif
 
 /* OTA Manufacturer code */
 #define DL_DEVICE_MANUFACTURER_CODE  0x1234

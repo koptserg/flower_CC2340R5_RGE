@@ -307,8 +307,8 @@ MAIN()
 
   ZB_ZCL_SET_STRING_VAL(g_dev_ctx.basic_attr.sw_build_id, "flower_onchip", 13);
 
-  ZB_ZCL_SET_STRING_VAL(g_dev_ctx.basic_attr.mf_name, "DIYRuZ", 6);
-  ZB_ZCL_SET_STRING_VAL(g_dev_ctx.basic_attr.model_id, "DIYRuZ_FW2340R5", 15);
+//  ZB_ZCL_SET_STRING_VAL(g_dev_ctx.basic_attr.mf_name, "DIYRuZ", 6);
+//  ZB_ZCL_SET_STRING_VAL(g_dev_ctx.basic_attr.model_id, "DIYRuZ_FW2340R5", 15);
 
   g_dev_ctx.battery_attr.remaining = ZB_ZCL_POWER_CONFIG_BATTERY_REMAINING_UNKNOWN;
 
@@ -325,9 +325,20 @@ MAIN()
   g_dev_ctx.temperature_attr.max_value = ZB_ZCL_TEMP_MEASUREMENT_MAX_VALUE_DEFAULT_VALUE;
   g_dev_ctx.temperature_attr.tolerance = ZB_ZCL_TEMP_MEASUREMENT_VALUE_DEFAULT_VALUE;
 
+#ifdef BOARD_KOPTSERG
   g_dev_ctx.ota_attr.manufacturer = 0xBEBE;
   g_dev_ctx.ota_attr.image_type = 0x2340;
-  g_dev_ctx.ota_attr.file_version = 0x24000008;
+  g_dev_ctx.ota_attr.file_version = 0x24000011;
+  ZB_ZCL_SET_STRING_VAL(g_dev_ctx.basic_attr.mf_name, "DIYRuZ", 6);
+  ZB_ZCL_SET_STRING_VAL(g_dev_ctx.basic_attr.model_id, "DIYRuZ_FW2340R5", 15);
+#endif
+#ifdef BOARD_DIYZI
+  g_dev_ctx.ota_attr.manufacturer = 0xBABA;
+  g_dev_ctx.ota_attr.image_type = 0x2340;
+  g_dev_ctx.ota_attr.file_version = 0x24100011;
+  ZB_ZCL_SET_STRING_VAL(g_dev_ctx.basic_attr.mf_name, "DIYRuZ", 6);
+  ZB_ZCL_SET_STRING_VAL(g_dev_ctx.basic_attr.model_id, "DIYZi_FW2340R5", 14);
+#endif
 
   /* Global ZBOSS initialization */
   ZB_INIT("on_off_switch");
@@ -422,6 +433,8 @@ MAIN()
 #endif
 
     GPIO_setConfig(CONFIG_GPIO_BTN1, GPIO_CFG_IN_PU);
+
+//    timer_update(10);
 
     /* Call the application-specific main loop */
     my_main_loop();
@@ -763,13 +776,17 @@ void timer_update(zb_uint8_t param)
         tmp102_start_measuremts(4);
       }
 #endif
-      update_attr_moisture_value(2);
+//      update_attr_moisture_value(2);
       ZB_SCHEDULE_APP_ALARM(timer_update, param, ZB_TIME_ONE_SECOND *10); // 10 sec
 }
 
 void timer2_update(zb_uint8_t param)
 {
-      update_attr_battery_value(1);
+//      update_attr_battery_value(1);
+      ZB_SCHEDULE_APP_ALARM(update_attr_battery_value, 1, ZB_TIME_ONE_SECOND *1);
+//      update_attr_moisture_value(2);
+      ZB_SCHEDULE_APP_ALARM(update_attr_moisture_value, 2, ZB_TIME_ONE_SECOND *2);
+
       ZB_SCHEDULE_APP_ALARM(timer2_update, param, ZB_TIME_ONE_SECOND *600); // 600 sec
 }
 
@@ -1314,15 +1331,15 @@ void zboss_signal_handler(zb_uint8_t param)
 
         configure_attribute_reporting();
 
-        timer_update(10); // update soil moisture, temperature, illuminance
         timer2_update(20); // update battery
+        timer_update(10); // update soil moisture, temperature, illuminance
 
         break;
       case ZB_BDB_SIGNAL_DEVICE_REBOOT:
         Log_printf(LogModule_Zigbee_App, Log_INFO, "Device RESTARTED OK");
 
-        timer_update(10); // update soil moisture, temperature, illuminance
         timer2_update(20); // update battery
+        timer_update(10); // update soil moisture, temperature, illuminance
 
         if (perform_factory_reset)
         {

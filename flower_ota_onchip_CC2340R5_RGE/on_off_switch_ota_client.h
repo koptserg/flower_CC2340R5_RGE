@@ -66,6 +66,13 @@
 #define WATER_COMPENSATION_FORMULA(ADC) ((148 * ADC + 900000))
 #endif
 
+#define APP_TC_REJOIN_DONE_COUNT            1 // count rejoin with interval
+#define APP_TC_REJOIN_DONE_DELAY            3 // rejoin intervals in seconds
+#define APP_DEVICE_REBOOT_START_DELAY_MIN   10 // minimum startup delay zboss_start_continue
+#define APP_DEVICE_REBOOT_START_DELAY_MAX   1800 // 30 min maximum startup delay zboss_start_continue
+#define APP_DEVICE_REBOOT_COUNT             20 // maximum number of reboots for APP_DEVICE_REBOOT_START_DELAY_MAX
+#define APP_DEVICE_REBOOT_COUNT_MAX         APP_DEVICE_REBOOT_COUNT + 48 // maximum number of reboots for stop
+
 /* OTA Manufacturer code */
 #define DL_DEVICE_MANUFACTURER_CODE  0x1234
 /* ZBOSS SDK for Smart plug application - from zb_ver_sdk_type.h */
@@ -450,6 +457,15 @@ typedef struct on_off_switch_ota_ctx_s
   device_ota_attr_t ota_attr;
   ota_upgrade_ctx_t ota_ctx;
 } on_off_switch_ota_ctx_t;
+
+/* Application dataset for persisting into nvram */
+typedef ZB_PACKED_PRE struct device_nvram_dataset_s
+{
+   zb_uint8_t reboot_state;
+   zb_uint8_t count_reboot;
+   /* Size of the structure in bytes must be divisible by 4 */
+   zb_uint8_t reserved[2];
+} ZB_PACKED_STRUCT device_nvram_dataset_t;
 
 extern on_off_switch_ota_ctx_t g_dev_ctx;
 

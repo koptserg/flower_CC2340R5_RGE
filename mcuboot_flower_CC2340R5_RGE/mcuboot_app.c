@@ -100,7 +100,9 @@ static void do_boot(struct boot_rsp *rsp) {
 }
 
 static void mcubootFail(void) {
+#ifndef EXCLUDE_GPIOS
     powerUpGpio();
+#endif
     while(1)
     {
 #ifndef EXCLUDE_GPIOS
@@ -141,7 +143,9 @@ int main(void)
 
     if ((0 == bootStatus) && (IMAGE_MAGIC == bootRsp.br_hdr->ih_magic))
     {
+#ifndef EXCLUDE_GPIOS
         blinkLed(GREEN_LED, 3, 500);
+#endif
         MCUBOOT_LOG_INF("bootRsp: slot = %x, offset = %x, ver=%d.%d.%d.%d",
                             bootStatus,
                             bootRsp.br_image_off,

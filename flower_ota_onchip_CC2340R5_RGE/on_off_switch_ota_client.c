@@ -99,6 +99,7 @@ zb_bool_t cmd_in_progress = ZB_FALSE;
 zb_bool_t perform_factory_reset = ZB_FALSE;
 
 on_off_switch_ota_ctx_t g_dev_ctx;
+device_nvram_dataset_t ds;
 
 zb_uint8_t button_number;
 zb_bool_t button_state;
@@ -130,6 +131,8 @@ bool tmp102_detect;
 
 bool press_buttom_update_attr = 0;
 zb_uint16_t currentVoltage = 0;
+
+zb_uint8_t count_tc_rejoin = APP_TC_REJOIN_DONE_COUNT;
 
 /****** Application function declarations ******/
 zb_uint8_t zcl_specific_cluster_cmd_handler(zb_uint8_t param);
@@ -174,6 +177,10 @@ void send_temperature(zb_uint8_t param);
 #endif
 zb_uint16_t getVoltage(zb_uint8_t voltCount);
 static void configure_attribute_reporting(void);
+
+zb_uint16_t get_nvram_data_size(void);
+void nvram_read_app_data(zb_uint8_t page, zb_uint32_t pos, zb_uint16_t payload_length);
+zb_ret_t nvram_write_app_data(zb_uint8_t page, zb_uint32_t pos);
 
 /****** Cluster declarations ******/
 /* Switch config cluster attributes */
@@ -328,14 +335,14 @@ MAIN()
 #ifdef BOARD_KOPTSERG
   g_dev_ctx.ota_attr.manufacturer = 0xBEBE;
   g_dev_ctx.ota_attr.image_type = 0x2340;
-  g_dev_ctx.ota_attr.file_version = 0x24000011;
+  g_dev_ctx.ota_attr.file_version = 0x24000012;
   ZB_ZCL_SET_STRING_VAL(g_dev_ctx.basic_attr.mf_name, "DIYRuZ", 6);
   ZB_ZCL_SET_STRING_VAL(g_dev_ctx.basic_attr.model_id, "DIYRuZ_FW2340R5", 15);
 #endif
 #ifdef BOARD_DIYZI
   g_dev_ctx.ota_attr.manufacturer = 0xBABA;
   g_dev_ctx.ota_attr.image_type = 0x2340;
-  g_dev_ctx.ota_attr.file_version = 0x24100011;
+  g_dev_ctx.ota_attr.file_version = 0x24100012;
   ZB_ZCL_SET_STRING_VAL(g_dev_ctx.basic_attr.mf_name, "DIYRuZ", 6);
   ZB_ZCL_SET_STRING_VAL(g_dev_ctx.basic_attr.model_id, "DIYZi_FW2340R5", 14);
 #endif
@@ -395,6 +402,11 @@ MAIN()
 
   /********** SP device configuration **********/
   ZB_ZCL_REGISTER_DEVICE_CB(device_interface_cb);
+
+  /* Register application callback for reading application data from NVRAM */
+  zb_nvram_register_app1_read_cb(nvram_read_app_data);
+  /* Register application callback for writing application data to NVRAM */
+  zb_nvram_register_app1_write_cb(nvram_write_app_data, get_nvram_data_size);
 
   /* Initiate the stack start without starting the commissioning */
   if (zboss_start_no_autostart() != RET_OK)
@@ -1183,6 +1195,9 @@ void button_press_handler(zb_uint8_t param)
               if (ZB_JOINED() != ZB_TRUE)
               {
 //                  zb_osif_led_on(0);
+                  ds.count_reboot = 0;
+                  zb_nvram_write_dataset(ZB_NVRAM_APP_DATA1);
+                  Log_printf(LogModule_Zigbee_App, Log_INFO, "Write Count reboot %d", ds.count_reboot);
                   ZB_SCHEDULE_APP_ALARM(off_network_attention, 0, 1 * ZB_TIME_ONE_SECOND);
                   zboss_start_continue();
               } else {
@@ -1265,6 +1280,11 @@ void device_reset_after(zb_uint8_t param)
   zb_reset(0);
 }
 
+void app_zboss_start_continue(zb_uint8_t param)
+{
+    zboss_start_continue();
+}
+
 void zboss_signal_handler(zb_uint8_t param)
 {
   zb_zdo_app_signal_hdr_t *sg_p = NULL;
@@ -1292,7 +1312,25 @@ void zboss_signal_handler(zb_uint8_t param)
         Log_printf(LogModule_Zigbee_App, Log_INFO, "ZB_ZDO_SIGNAL_SKIP_STARTUP: boot, not started yet");
         if (zb_bdb_is_factory_new() != ZB_TRUE)
         {
-          zboss_start_continue();
+
+//              zboss_start_continue();
+            zb_uint32_t delay_start = 0;
+            if (ds.count_reboot <= APP_DEVICE_REBOOT_COUNT)
+            {
+                delay_start = APP_DEVICE_REBOOT_START_DELAY_MIN * ds.count_reboot;
+                ZB_SCHEDULE_APP_ALARM(app_zboss_start_continue, 0, ZB_TIME_ONE_SECOND * delay_start);
+            } else {
+                if (ds.count_reboot <= APP_DEVICE_REBOOT_COUNT_MAX)
+                {
+                    delay_start = APP_DEVICE_REBOOT_START_DELAY_MAX;
+                    ZB_SCHEDULE_APP_ALARM(app_zboss_start_continue, 0, ZB_TIME_ONE_SECOND * delay_start);
+                } else {
+                    ds.count_reboot = 0;
+                    zb_nvram_write_dataset(ZB_NVRAM_APP_DATA1);
+                    Log_printf(LogModule_Zigbee_App, Log_INFO, "Write Count reboot %d", ds.count_reboot);
+                }
+
+            }
         }
 #endif /* ZB_MACSPLIT_HOST */
         break;
@@ -1337,6 +1375,10 @@ void zboss_signal_handler(zb_uint8_t param)
         break;
       case ZB_BDB_SIGNAL_DEVICE_REBOOT:
         Log_printf(LogModule_Zigbee_App, Log_INFO, "Device RESTARTED OK");
+
+        ds.count_reboot = 0;
+        zb_nvram_write_dataset(ZB_NVRAM_APP_DATA1);
+        Log_printf(LogModule_Zigbee_App, Log_INFO, "Write Count reboot %d", ds.count_reboot);
 
         timer2_update(20); // update battery
         timer_update(10); // update soil moisture, temperature, illuminance
@@ -1437,6 +1479,7 @@ void zboss_signal_handler(zb_uint8_t param)
           /* Device tried to perform secure rejoin, but didn't found any networks or can't decrypt Rejoin Response
            * (it is possible when Trust Center changes network key when ZED is powered off) */
           Log_printf(LogModule_Zigbee_App, Log_WARNING, "Device is still authenticated, try to perform TC rejoin");
+
           ZB_SCHEDULE_APP_ALARM(zb_bdb_initiate_tc_rejoin, 0, ZB_TIME_ONE_SECOND);
         }
         break; /* ZB_BDB_SIGNAL_DEVICE_REBOOT */
@@ -1448,7 +1491,21 @@ void zboss_signal_handler(zb_uint8_t param)
       case ZB_BDB_SIGNAL_TC_REJOIN_DONE:
         Log_printf(LogModule_Zigbee_App, Log_WARNING, "TC rejoin failed, so try it again with interval");
 
-        ZB_SCHEDULE_APP_ALARM(zb_bdb_initiate_tc_rejoin, 0, 3 * ZB_TIME_ONE_SECOND);
+        ZB_SCHEDULE_APP_ALARM(zb_bdb_initiate_tc_rejoin, 0, ZB_TIME_ONE_SECOND * APP_TC_REJOIN_DONE_DELAY);
+
+        count_tc_rejoin = count_tc_rejoin - 1;
+        if (count_tc_rejoin == 0)
+        {
+//          zb_bdb_reset_via_local_action(0);
+//          perform_factory_reset = ZB_FALSE;
+
+          ds.count_reboot = ds.count_reboot + 1;
+          zb_nvram_write_dataset(ZB_NVRAM_APP_DATA1);
+          Log_printf(LogModule_Zigbee_App, Log_INFO, "Write Count reboot %d", ds.count_reboot);
+
+          ZB_SCHEDULE_APP_ALARM(device_reset_after, 0, ZB_TIME_ONE_SECOND * 1);
+        }
+
         break; /* ZB_BDB_SIGNAL_TC_REJOIN_DONE */
 
       case ZB_BDB_SIGNAL_STEERING:
@@ -1494,4 +1551,32 @@ void device_interface_cb(zb_uint8_t param)
   }
 
   Log_printf(LogModule_Zigbee_App, Log_INFO, "device_interface_cb %d", device_cb_param->status);
+}
+
+//(void)zb_nvram_write_dataset(ZB_NVRAM_APP_DATA1);
+
+zb_uint16_t get_nvram_data_size(void)
+{
+  return sizeof(device_nvram_dataset_t);
+}
+
+void nvram_read_app_data(zb_uint8_t page, zb_uint32_t pos, zb_uint16_t payload_length)
+{
+  zb_ret_t ret;
+  /* If we fail, trace is given and assertion is triggered */
+  ret = zb_nvram_read_data(page, pos, (zb_uint8_t*)&ds, sizeof(ds));
+  Log_printf(LogModule_Zigbee_App, Log_INFO, "Status Count reboot %d", ret);
+  if (ret == RET_OK)
+{
+      Log_printf(LogModule_Zigbee_App, Log_INFO, "Read Count reboot %d", ds.count_reboot);
+ }
+}
+
+zb_ret_t nvram_write_app_data(zb_uint8_t page, zb_uint32_t pos)
+{
+  zb_ret_t ret;
+  // ACTION TAKEN HERE
+  /* If we fail, trace is given and assertion is triggered */
+  ret = zb_nvram_write_data(page, pos, (zb_uint8_t*)&ds, sizeof(ds));
+  return ret;
 }

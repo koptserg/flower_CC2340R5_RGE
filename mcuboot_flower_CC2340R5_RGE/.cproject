@@ -61,6 +61,7 @@
 									<listOptionValue builtIn="false" value="BOOT_LOADER"/>
 									<listOptionValue builtIn="false" value="SPI_CTL0_SPO_LOW=SPI_CTL0_SPO_LO"/>
 									<listOptionValue builtIn="false" value="SPI_CTL0_SPO_HIGH=SPI_CTL0_SPO_HI"/>
+									<listOptionValue builtIn="false" value="EXCLUDE_GPIOS"/>
 								</option>
 								<option id="com.ti.ccstudio.buildDefinitions.TMS470_TICLANG_3.2.compilerID.GENERATE_DWARF_DEBUG.215204800" name="Generate DWARF debug" superClass="com.ti.ccstudio.buildDefinitions.TMS470_TICLANG_3.2.compilerID.GENERATE_DWARF_DEBUG" value="com.ti.ccstudio.buildDefinitions.TMS470_TICLANG_3.2.compilerID.GENERATE_DWARF_DEBUG.GDWARF_3" valueType="enumerated"/>
 								<option id="com.ti.ccstudio.buildDefinitions.TMS470_TICLANG_3.2.compilerID.STD_C.596961303" name="Select assumed C language standard (-std)" superClass="com.ti.ccstudio.buildDefinitions.TMS470_TICLANG_3.2.compilerID.STD_C" value="com.ti.ccstudio.buildDefinitions.TMS470_TICLANG_3.2.compilerID.STD_C.gnu9x" valueType="enumerated"/>

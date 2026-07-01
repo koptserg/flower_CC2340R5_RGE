@@ -106,6 +106,7 @@ zb_bool_t button_state;
 zb_time_t current_time;
 zb_time_t timestamp;
 zb_uint8_t led_number_blink = 0;
+zb_uint8_t led_count_blink = 3;
 
 PWM_Handle pwm;
 PWM_Params pwmParams;
@@ -335,14 +336,14 @@ MAIN()
 #ifdef BOARD_KOPTSERG
   g_dev_ctx.ota_attr.manufacturer = 0xBEBE;
   g_dev_ctx.ota_attr.image_type = 0x2340;
-  g_dev_ctx.ota_attr.file_version = 0x24000012;
+  g_dev_ctx.ota_attr.file_version = 0x24000013;
   ZB_ZCL_SET_STRING_VAL(g_dev_ctx.basic_attr.mf_name, "DIYRuZ", 6);
   ZB_ZCL_SET_STRING_VAL(g_dev_ctx.basic_attr.model_id, "DIYRuZ_FW2340R5", 15);
 #endif
 #ifdef BOARD_DIYZI
   g_dev_ctx.ota_attr.manufacturer = 0xBABA;
   g_dev_ctx.ota_attr.image_type = 0x2340;
-  g_dev_ctx.ota_attr.file_version = 0x24100012;
+  g_dev_ctx.ota_attr.file_version = 0x24100013;
   ZB_ZCL_SET_STRING_VAL(g_dev_ctx.basic_attr.mf_name, "DIYRuZ", 6);
   ZB_ZCL_SET_STRING_VAL(g_dev_ctx.basic_attr.model_id, "DIYZi_FW2340R5", 14);
 #endif
@@ -1194,7 +1195,6 @@ void button_press_handler(zb_uint8_t param)
           {
               if (ZB_JOINED() != ZB_TRUE)
               {
-//                  zb_osif_led_on(0);
                   ds.count_reboot = 0;
                   zb_nvram_write_dataset(ZB_NVRAM_APP_DATA1);
                   Log_printf(LogModule_Zigbee_App, Log_INFO, "Write Count reboot %d", ds.count_reboot);
@@ -1203,9 +1203,7 @@ void button_press_handler(zb_uint8_t param)
               } else {
                     zb_bdb_reset_via_local_action(0);
                     perform_factory_reset = ZB_FALSE;
-                    led_number_blink = 1;
-                    zb_uint8_t led_count_blink = 3;
-                    led_blink(led_count_blink*2+1);
+
                   ZB_SCHEDULE_APP_ALARM(device_reset_after, 0, ZB_TIME_ONE_SECOND * 2);
               }
           }
@@ -1213,26 +1211,9 @@ void button_press_handler(zb_uint8_t param)
           {
               if (ZB_JOINED())
               {
-//                 cmd_in_progress = ZB_FALSE;
-//                 send_toggle_req(param);
-
-//                  zb_ret_t zb_err_code;
-//                  zb_err_code = zb_buf_get_out_delayed(send_toggle_req);
-
-//                  Log_printf(LogModule_Zigbee_App, Log_INFO, "basic_attr_power_source %d", g_dev_ctx.basic_attr.power_source);
-//                  led_number_blink = 0;
-//                  zb_uint8_t led_count_blink = 3;
-//                  led_blink(led_count_blink*2+1);
-
-//                  press_buttom_update_attr = 1;
-//                  uint8_t status = ZB_SCHEDULE_APP_ALARM_CANCEL (timer_update, ZB_ALARM_ANY_PARAM );
-//                  Log_printf(LogModule_Zigbee_App, Log_INFO, "ZB_SCHEDULE_APP_ALARM_CANCEL status %d", status);
-//                  update_attr_value(1);
-//                  update_attr_temperature_value(4);
-//                  update_attr_illuminance_value(3);
-//                  press_buttom_update_attr = 0;
-//                  timer_update(0);
-
+                  led_number_blink = 0; // GREEN
+                  zb_uint8_t led_count_blink = 1;
+                  led_blink(led_count_blink*2+1);
 #ifdef TMP102
                   if(tmp102_detect == 1)
                   {
@@ -1248,6 +1229,9 @@ void button_press_handler(zb_uint8_t param)
                   ZB_SCHEDULE_APP_ALARM(send_soil_moisture, 2, ZB_MILLISECONDS_TO_BEACON_INTERVAL(10));
                   ZB_SCHEDULE_APP_ALARM(send_percentage, 1, ZB_MILLISECONDS_TO_BEACON_INTERVAL(300));
               } else {
+                  led_number_blink = 1; // RED
+                  led_count_blink = 1;
+                  led_blink(led_count_blink*2+1);
 //                  soil_moisture(10);
 #ifdef OPT3001
                   opt3001_start_measuremts(12);
@@ -1331,6 +1315,10 @@ void zboss_signal_handler(zb_uint8_t param)
                 }
 
             }
+        } else {
+            led_number_blink = 1; // RED
+            led_count_blink = 3;
+            led_blink(led_count_blink*2+1);
         }
 #endif /* ZB_MACSPLIT_HOST */
         break;
@@ -1395,8 +1383,12 @@ void zboss_signal_handler(zb_uint8_t param)
 #else
       case ZB_SIGNAL_JOIN_DONE:
         Log_printf(LogModule_Zigbee_App, Log_INFO, "TC join is completed successfully");
+        led_number_blink = 0; // GREEN
+        led_count_blink = 3;
+        led_blink(led_count_blink*2);
       case ZB_BDB_SIGNAL_TC_REJOIN_DONE:
         Log_printf(LogModule_Zigbee_App, Log_INFO, "TC rejoin is completed successfully");
+
       case ZB_BDB_SIGNAL_STEERING:
 #endif
       {

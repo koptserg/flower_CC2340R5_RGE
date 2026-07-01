@@ -183,7 +183,7 @@ post-build:
 	-C:/ti/ccs1281/ccs/tools/compiler/ti-cgt-armllvm_3.2.2.LTS/bin/tiarmobjcopy -O binary C:/Users/Sergey/workspace_v12/flower_ota_onchip_CC2340R5_RGE/Diyzi/flower_ota_onchip_CC2340R5_RGE_diyzi.out C:/Users/Sergey/workspace_v12/flower_ota_onchip_CC2340R5_RGE/Diyzi/flower_ota_onchip_CC2340R5_RGE_diyzi.bin --remove-section=.ccfg
 	-C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/tools/common/mcuboot/imgtool sign --header-size 0x100 --align 4 --slot-size 0x0003D800 --version 1.0.0 --pad --pad-header --key C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/source/third_party/mcuboot/root-ec-p256.pem  C:/Users/Sergey/workspace_v12/flower_ota_onchip_CC2340R5_RGE/Diyzi/flower_ota_onchip_CC2340R5_RGE_diyzi.bin C:/Users/Sergey/workspace_v12/flower_ota_onchip_CC2340R5_RGE/Diyzi/flower_ota_onchip_CC2340R5_RGE_diyzi_ota.bin
 	-C:/ti/ccs1281/ccs/tools/compiler/ti-cgt-armllvm_3.2.2.LTS/bin/tiarmobjcopy -O ihex C:/Users/Sergey/workspace_v12/flower_ota_onchip_CC2340R5_RGE/Diyzi/flower_ota_onchip_CC2340R5_RGE_diyzi.out C:/Users/Sergey/workspace_v12/flower_ota_onchip_CC2340R5_RGE/Diyzi/flower_ota_onchip_CC2340R5_RGE_diyzi.hex
-	-C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/tools/zstack/zigbee_ota_image_converter/zOTAfileGen C:/Users/Sergey/workspace_v12/flower_ota_onchip_CC2340R5_RGE/Diyzi/flower_ota_onchip_CC2340R5_RGE_diyzi_ota.bin C:/Users/Sergey/workspace_v12/flower_ota_onchip_CC2340R5_RGE/Diyzi/    BABA 2340 24100011
+	-C:/ti/simplelink_lowpower_f3_sdk_8_40_02_01/tools/zstack/zigbee_ota_image_converter/zOTAfileGen C:/Users/Sergey/workspace_v12/flower_ota_onchip_CC2340R5_RGE/Diyzi/flower_ota_onchip_CC2340R5_RGE_diyzi_ota.bin C:/Users/Sergey/workspace_v12/flower_ota_onchip_CC2340R5_RGE/Diyzi/    BABA 2340 24100013
 	-@echo ' '
 
 .PHONY: all clean dependents
